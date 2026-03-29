@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SR Subhash | Cyber Luxury Car Rental</title>
+  <!-- Google Fonts + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Three.js -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+      }
+    }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: #03050b;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* ========== DARK CYBER BACKGROUND ========== */
+    .cyber-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(ellipse at 20% 30%, #0a0f1a, #020408);
+    }
+    .cyber-bg::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        repeating-linear-gradient(0deg, rgba(230,126,34,0.03) 0px, rgba(230,126,34,0.03) 1px, transparent 1px, transparent 4px),
+        repeating-linear-gradient(90deg, rgba(230,126,34,0.03) 0px, rgba(230,126,34,0.03) 1px, transparent 1px, transparent 4px);
+      pointer-events: none;
+    }
+
+    /* ========== FLOATING ACTION BUTTONS (Call & WhatsApp) ========== */
+    .floating-buttons {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .float-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      animation: pulse 2s infinite;
+    }
+    .float-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(230,126,34,0.6);
+    }
+    .float-call {
+      background: linear-gradient(135deg, #25d366, #128C7E);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .float-whatsapp {
+      background: linear-gradient(135deg, #25d366, #128C7E);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .float-btn i {
+      font-size: 28px;
+      color: white;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4); }
+      50% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0.2); }
+    }
+
+    /* ========== MODERN NEON NAVBAR ========== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(3, 5, 11, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(230, 126, 34, 0.4);
+      z-index: 1000;
+      transition: all 0.3s;
+    }
+    .logo h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(230,126,34,0.5);
+    }
+    .logo h2 span {
+      color: #e67e22;
+      font-weight: 900;
+    }
+    .logo p {
+      font-size: 0.65rem;
+      color: #e67e22;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #b0b8d0;
+      transition: 0.25s;
+      font-size: 0.9rem;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: #e67e22;
+    }
+    .nav-links a.active::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #e67e22;
+      box-shadow: 0 0 8px #e67e22;
+    }
+
+    /* ========== HERO SECTION - EDGY ========== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    .hero-badge {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      max-width: 800px;
+      padding: 2rem;
+      animation: fadeInUp 0.9s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .neon-chip {
+      display: inline-block;
+      background: rgba(230,126,34,0.15);
+      backdrop-filter: blur(8px);
+      padding: 0.4rem 1.3rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e67e22;
+      box-shadow: 0 0 12px rgba(230,126,34,0.4);
+      letter-spacing: 2px;
+    }
+    .hero-badge h1 {
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      background: linear-gradient(95deg, #ffffff, #e67e22, #ffaa55);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero-badge p {
+      font-size: 1.1rem;
+      color: #9aa4bf;
+      margin-bottom: 2rem;
+      max-width: 550px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-cyber {
+      background: transparent;
+      border: 2px solid #e67e22;
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #e67e22;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      backdrop-filter: blur(4px);
+    }
+    .btn-cyber:hover {
+      background: #e67e22;
+      color: #000;
+      box-shadow: 0 0 25px #e67e22;
+      border-color: #e67e22;
+      transform: translateY(-2px);
+    }
+
+    /* ========== DRIVER SECTION - SINGLE DRIVER ========== */
+    .section-dark {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+      position: relative;
+    }
+    .section-title-cyber {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .section-title-cyber .tag {
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      color: #e67e22;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .section-title-cyber h2 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-top: 0.5rem;
+      background: linear-gradient(135deg, #fff, #e67e22);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .single-driver-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .driver-cyber-card-single {
+      background: rgba(8, 12, 22, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      width: 380px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      border: 1px solid rgba(230,126,34,0.3);
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+    .driver-cyber-card-single::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #e67e22, transparent);
+      transform: scaleX(0);
+      transition: transform 0.4s;
+    }
+    .driver-cyber-card-single:hover::after {
+      transform: scaleX(1);
+    }
+    .driver-cyber-card-single:hover {
+      border-color: #e67e22;
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(230,126,34,0.2);
+    }
+    .driver-img-cyber {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 1.2rem;
+      border-radius: 50%;
+      border: 3px solid #e67e22;
+      box-shadow: 0 0 20px rgba(230,126,34,0.4);
+      overflow: hidden;
+      background: linear-gradient(135deg, #2a2a3a, #1a1a2a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .driver-img-cyber img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .driver-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #e67e22;
+      background: #1a1a2a;
+    }
+    .driver-name-cyber {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .driver-exp-cyber {
+      color: #e67e22;
+      font-weight: 600;
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+    }
+    .driver-bio {
+      font-size: 0.9rem;
+      color: #b0b8d0;
+      line-height: 1.5;
+      margin-top: 0.8rem;
+    }
+
+    /* Quick Contact Bar */
+    .quick-contact-bar {
+      max-width: 1400px;
+      margin: 2rem auto 0;
+      padding: 0 2rem;
+    }
+    .contact-bar {
+      background: linear-gradient(135deg, rgba(230,126,34,0.15), rgba(0,0,0,0.4));
+      border-radius: 1.5rem;
+      padding: 1rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border: 1px solid rgba(230,126,34,0.3);
+    }
+    .contact-bar p {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+    .contact-bar i {
+      color: #e67e22;
+      font-size: 1.2rem;
+    }
+    .contact-bar a {
+      color: #ffaa66;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .contact-bar a:hover {
+      color: #e67e22;
+      text-shadow: 0 0 5px #e67e22;
+    }
+    .contact-icons {
+      display: flex;
+      gap: 1rem;
+    }
+    .contact-icons a {
+      width: 40px;
+      height: 40px;
+      background: rgba(230,126,34,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e67e22;
+      transition: all 0.3s;
+      border: 1px solid rgba(230,126,34,0.3);
+    }
+    .contact-icons a:hover {
+      background: #e67e22;
+      color: #000;
+      transform: translateY(-3px);
+    }
+
+    /* ========== FOOTER ========== */
+    .footer-cyber {
+      background: #010101;
+      border-top: 1px solid rgba(230,126,34,0.3);
+      text-align: center;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    /* Glowing Star Particles */
+    .star-particle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+
+    .star-particle::before {
+      content: '·';
+      font-size: 2rem;
+      color: #ffffff;
+      text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #e67e22,
+        0 0 15px #ff6b35,
+        0 0 20px #ff4500;
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(0px);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1) translateY(-20px);
+      }
+    }
+
+    @keyframes glow {
+      0% {
+        filter: brightness(1) blur(0px);
+      }
+      100% {
+        filter: brightness(1.5) blur(1px);
+      }
+    }
+
+    /* ========== RESPONSIVE DESIGN ========== */
+    @media (max-width: 900px) {
+      .navbar {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.5rem;
+      }
+      .nav-links {
+        gap: 1rem;
+      }
+      .hero-badge {
+        padding: 1rem;
+        max-width: 90vw;
+      }
+      .hero-badge h1 {
+        font-size: 2.5rem;
+      }
+      .hero-badge p {
+        font-size: 1rem;
+      }
+      .services-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .service-card {
+        padding: 1.5rem;
+      }
+      .contact-bar {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+      .contact-icons {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero-badge h1 {
+        font-size: 2rem;
+      }
+      .hero-badge p {
+        font-size: 0.9rem;
+      }
+      .neon-chip {
+        font-size: 0.6rem;
+        padding: 0.3rem 1rem;
+      }
+      .btn-primary {
+        padding: 0.8rem 2rem;
+        font-size: 0.9rem;
+      }
+      .service-card h3 {
+        font-size: 1.2rem;
+      }
+      .contact-bar {
+        padding: 1rem;
+      }
+      .contact-bar p {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="cyber-bg"></div>
+
+<!-- Fire Sprinkle Container -->
+<div id="fireSprinkles"></div>
+
+<!-- Floating Action Buttons for Direct Call & WhatsApp -->
+<div class="floating-buttons">
+  <a href="tel:+917004499403" class="float-btn float-call" title="Call Now">
+    <i class="fas fa-phone-alt"></i>
+  </a>
+  <a href="https://wa.me/917004499403?text=Hello%20SR%20Subhash%2C%20I%20want%20to%20book%20a%20car%20rental%20service" target="_blank" class="float-btn float-whatsapp" title="WhatsApp Us">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+</div>
+
+<nav class="navbar">
+  <div class="logo">
+    <h2>SR SUBHASH <span>CAR RENTAL</span></h2>
+    <p>✦ PREMIUM SERVICE ✦</p>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="plan.html">Plans</a></li>
+    <li><a href="booking.html">Booking</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="hero">
+    <div id="canvas-container"></div>
+    <div class="hero-badge">
+      <div class="neon-chip"><i class="fas fa-bolt"></i> UNLEASH THE DRIVE</div>
+      <h1>Velocity & Prestige</h1>
+      <p>SR Subhash brings you hyper luxury fleet with elite chauffeurs. Experience the road like never before.</p>
+      <a href="booking.html" class="btn-cyber"><i class="fas fa-key"></i> BOOK NOW <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </section>
+
+  <div class="section-dark">
+    <div class="section-title-cyber">
+      <div class="tag"><i class="fas fa-user-ninja"></i> YOUR PERSONAL CHAUFFEUR</div>
+      <h2>Meet Your Driver</h2>
+    </div>
+    <div class="single-driver-container">
+      <div class="driver-cyber-card-single">
+        <div class="driver-img-cyber">
+          <img src="image/Picsart_26-03-28_22-55-06-625.jpg" alt="Vinod Matha - Elite Chauffeur" class="driver-image">
+        </div>
+        <div class="driver-name-cyber">Vinod Matha</div>
+        <div class="driver-exp-cyber"><i class="fas fa-trophy"></i> 18+ Years Experience | Elite Chauffeur</div>
+        <div class="driver-bio">
+          Certified luxury driver with expertise in long routes, hill stations & city tours. 
+          Multi-lingual, professional, and dedicated to providing a safe, comfortable journey. 
+          Specializes in VIP handling and premium fleet management.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Contact Bar with Social Icons -->
+  <div class="quick-contact-bar">
+    <div class="contact-bar">
+      <p><i class="fas fa-phone-alt"></i> Book Now: <a href="tel:+917004499403"><strong>+91 70044 99403</strong></a></p>
+      <p><i class="fab fa-whatsapp"></i> WhatsApp: <a href="https://wa.me/917004499403?text=Hello%20SR%20Subhash%2C%20I%20want%20to%20book%20a%20car%20rental%20service" target="_blank"><strong>+91 70044 99403</strong></a></p>
+      <div class="contact-icons">
+        <a href="https://www.facebook.com/share/1CWHGRSjgd/" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/karan_choudhary_10?igsh=MWw1dG9vcHh4ZXo0cA==" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="tel:+917004499403" title="Call"><i class="fas fa-phone-alt"></i></a>
+        <a href="https://wa.me/917004499403?text=Hello%20SR%20Subhash%2C%20I%20want%20to%20book%20a%20car%20rental%20service" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer-cyber">
+  <p>SR SUBHASH CAR RENTAL SERVICE — Drive Beyond Limits</p>
+  <p style="font-size:0.7rem; margin-top:0.5rem;">© 2025 | Hyper Luxury Fleet | Call: +91 70044 99403</p>
+</footer>
+
+<!-- Three.js Hyper Car Scene with Cyber Vibes -->
+<script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+  const container = document.getElementById('canvas-container');
+  if (!container) return;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x03050b);
+  scene.fog = new THREE.FogExp2(0x03050b, 0.01);
+
+  const camera = new THREE.PerspectiveCamera(44, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.set(3.2, 1.7, 5.5);
+  camera.lookAt(0, 0.2, 0);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.9;
+  controls.enableZoom = false;
+  controls.enablePan = false;
+  controls.target.set(0, 0.3, 0);
+
+  // Lighting - Cyberpunk
+  const ambient = new THREE.AmbientLight(0x111122, 0.5);
+  scene.add(ambient);
+  const keyLight = new THREE.DirectionalLight(0xffaa66, 1.2);
+  keyLight.position.set(3, 4, 2);
+  keyLight.castShadow = true;
+  scene.add(keyLight);
+  const neonLight = new THREE.PointLight(0xe67e22, 0.9);
+  neonLight.position.set(1.2, 1, 2);
+  scene.add(neonLight);
+  const rimLight = new THREE.PointLight(0xff5533, 0.6);
+  rimLight.position.set(-1.5, 1.2, -2.5);
+  scene.add(rimLight);
+
+  // Ground effect
+  const groundPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(8, 8),
+    new THREE.ShadowMaterial({ opacity: 0.5, color: 0x000000, transparent: true })
+  );
+  groundPlane.rotation.x = -Math.PI / 2;
+  groundPlane.position.y = -0.68;
+  groundPlane.receiveShadow = true;
+  scene.add(groundPlane);
+
+  const grid = new THREE.GridHelper(9, 30, 0xe67e22, 0x4a6f8a);
+  grid.position.y = -0.66;
+  grid.material.transparent = true;
+  grid.material.opacity = 0.3;
+  scene.add(grid);
+
+  // Floating particles
+  const particleCount = 1800;
+  const particleGeo = new THREE.BufferGeometry();
+  const posArray = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    posArray[i*3] = (Math.random() - 0.5) * 24;
+    posArray[i*3+1] = (Math.random() - 0.5) * 5 + 1;
+    posArray[i*3+2] = (Math.random() - 0.5) * 18 - 5;
+  }
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+  const particleMat = new THREE.PointsMaterial({ color: 0xe67e22, size: 0.045, transparent: true, opacity: 0.5 });
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+
+  // Car - Sleek Aggressive
+  function buildCyberCar() {
+    const group = new THREE.Group();
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0xcc5511, metalness: 0.9, roughness: 0.2 });
+    const bodyGeo = new THREE.BoxGeometry(1.65, 0.44, 3.15);
+    const body = new THREE.Mesh(bodyGeo, bodyMat);
+    body.castShadow = true;
+    body.position.y = 0.22;
+    group.add(body);
+
+    const roofMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.85 });
+    const roofGeo = new THREE.BoxGeometry(1.28, 0.3, 2.0);
+    const roof = new THREE.Mesh(roofGeo, roofMat);
+    roof.position.set(0, 0.54, -0.16);
+    group.add(roof);
+
+    const hoodMat = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, metalness: 0.7 });
+    const hoodGeo = new THREE.BoxGeometry(1.4, 0.12, 0.95);
+    const hood = new THREE.Mesh(hoodGeo, hoodMat);
+    hood.position.set(0, 0.46, 1.1);
+    group.add(hood);
+
+    const wheelMat = new THREE.MeshStandardMaterial({ color: 0x222233, metalness: 0.7 });
+    const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.6, 32);
+    const wheelPos = [[-1.0, 0.13, 1.18], [1.0, 0.13, 1.18], [-1.0, 0.13, -1.2], [1.0, 0.13, -1.2]];
+    wheelPos.forEach(pos => {
+      const wheel = new THREE.Mesh(wheelGeo, wheelMat);
+      wheel.rotation.z = Math.PI/2;
+      wheel.position.set(pos[0], pos[1], pos[2]);
+      wheel.castShadow = true;
+      group.add(wheel);
+      const rimGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.62, 8);
+      const rimMat = new THREE.MeshStandardMaterial({ color: 0xddccaa, metalness: 0.95 });
+      const rim = new THREE.Mesh(rimGeo, rimMat);
+      rim.rotation.z = Math.PI/2;
+      rim.position.set(pos[0], pos[1]+0.01, pos[2]);
+      group.add(rim);
+    });
+
+    const headMat = new THREE.MeshStandardMaterial({ color: 0xffaa66, emissive: 0xaa4411 });
+    const leftHead = new THREE.Mesh(new THREE.SphereGeometry(0.14, 24, 24), headMat);
+    leftHead.position.set(-0.71, 0.29, 1.66);
+    const rightHead = new THREE.Mesh(new THREE.SphereGeometry(0.14, 24, 24), headMat);
+    rightHead.position.set(0.71, 0.29, 1.66);
+    group.add(leftHead, rightHead);
+
+    return group;
+  }
+
+  const car = buildCyberCar();
+  car.scale.set(0.86, 0.86, 0.86);
+  car.position.y = -0.28;
+  scene.add(car);
+
+  const glowSpheres = [];
+  for (let i=0; i<10; i++) {
+    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.085, 16, 16), new THREE.MeshStandardMaterial({ color: 0xe67e22, emissive: 0x552200 }));
+    scene.add(orb);
+    glowSpheres.push(orb);
+  }
+
+  const starCount = 2200;
+  const starGeo = new THREE.BufferGeometry();
+  const starPositions = new Float32Array(starCount * 3);
+  for (let i=0; i<starCount; i++) {
+    starPositions[i*3] = (Math.random() - 0.5) * 350;
+    starPositions[i*3+1] = (Math.random() - 0.5) * 100 + 8;
+    starPositions[i*3+2] = (Math.random() - 0.5) * 160 - 80;
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0.6 }));
+  scene.add(stars);
+
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.016;
+    car.position.y = -0.28 + Math.sin(time * 2.3) * 0.01;
+    particles.rotation.y += 0.001;
+    stars.rotation.y += 0.0002;
+
+    glowSpheres.forEach((orb, idx) => {
+      const rad = 1.35;
+      const speed = 0.7 + idx * 0.08;
+      orb.position.x = Math.sin(time * speed + idx) * rad;
+      orb.position.z = Math.cos(time * (speed+0.2) + idx) * rad;
+      orb.position.y = 0.55 + Math.sin(time * 1.4 + idx) * 0.35;
+    });
+
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
+
+  // Initialize star particles
+  initStarParticles();
+  
+  function initStarParticles() {
+    const fireSprinkles = document.getElementById('fireSprinkles');
+    
+    // Create star particles
+    function createStar() {
+      const star = document.createElement('div');
+      star.className = 'star-particle';
+      
+      // Random position across the width
+      star.style.left = Math.random() * 100 + 'vw';
+      
+      // Random animation delay
+      star.style.animationDelay = Math.random() * 4 + 's';
+      
+      // Random size variation (smaller)
+      const size = Math.random() * 0.5 + 0.5;
+      star.style.transform = `scale(${size})`;
+      
+      fireSprinkles.appendChild(star);
+      
+      // Remove after animation completes
+      setTimeout(() => {
+        if (star.parentElement) {
+          star.remove();
+        }
+      }, 4000);
+    }
+    
+    // Create new stars every 1-2 seconds
+    setInterval(createStar, Math.random() * 1000 + 1000);
+    
+    // Initial batch
+    for (let i = 0; i < 20; i++) {
+      setTimeout(createStar, Math.random() * 2000);
+    }
+  }
+</script>
+</body>
+</html>

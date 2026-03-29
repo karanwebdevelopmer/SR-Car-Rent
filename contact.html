@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SR Subhash | Contact Us</title>
+  <!-- Google Fonts + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDd5lR5hbpLvUzeBJstQ8sNWgv6RcHCH7U",
+      authDomain: "car-website-1637b.firebaseapp.com",
+      databaseURL: "https://car-website-1637b-default-rtdb.firebaseio.com",
+      projectId: "car-website-1637b",
+      storageBucket: "car-website-1637b.firebasestorage.app",
+      messagingSenderId: "535352425150",
+      appId: "1:535352425150:web:7f344485ccfc736cfffcef",
+      measurementId: "G-R38Z527CGL"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+
+    // Make database available globally
+    window.database = database;
+    window.ref = ref;
+    window.push = push;
+    window.set = set;
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: #03050b;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* ========== DARK CYBER BACKGROUND ========== */
+    .cyber-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(ellipse at 20% 30%, #0a0f1a, #020408);
+    }
+    .cyber-bg::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        repeating-linear-gradient(0deg, rgba(230,126,34,0.03) 0px, rgba(230,126,34,0.03) 1px, transparent 1px, transparent 4px),
+        repeating-linear-gradient(90deg, rgba(230,126,34,0.03) 0px, rgba(230,126,34,0.03) 1px, transparent 1px, transparent 4px);
+      pointer-events: none;
+    }
+
+    /* ========== FLOATING ACTION BUTTONS (Call & WhatsApp) ========== */
+    .floating-buttons {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .float-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      animation: pulse 2s infinite;
+    }
+    .float-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(230,126,34,0.6);
+    }
+    .float-call {
+      background: linear-gradient(135deg, #25d366, #128C7E);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .float-whatsapp {
+      background: linear-gradient(135deg, #25d366, #128C7E);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .float-btn i {
+      font-size: 28px;
+      color: white;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4); }
+      50% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0.2); }
+    }
+
+    /* Shake animation for errors */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    /* Toast Notification Styles */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      min-width: 350px;
+      max-width: 500px;
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      border: 2px solid;
+      animation: slideInDown 0.5s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast-notification.success {
+      background: rgba(76, 175, 80, 0.9);
+      border-color: #4CAF50;
+      color: white;
+    }
+
+    .toast-notification.error {
+      background: rgba(244, 67, 54, 0.9);
+      border-color: #f44336;
+      color: white;
+      animation: slideInDown 0.5s ease-out, shake 0.5s ease-in-out 0.5s;
+    }
+
+    .toast-notification .icon {
+      font-size: 1.5rem;
+    }
+
+    .toast-notification .message {
+      flex: 1;
+    }
+
+    .toast-notification .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .toast-notification .close-btn:hover {
+      opacity: 1;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideOutUp {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+    }
+
+    /* Glowing Star Particles */
+    .star-particle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+
+    .star-particle::before {
+      content: '·';
+      font-size: 2rem;
+      color: #ffffff;
+      text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #e67e22,
+        0 0 15px #ff6b35,
+        0 0 20px #ff4500;
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(0px);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1) translateY(-20px);
+      }
+    }
+
+    @keyframes glow {
+      0% {
+        filter: brightness(1) blur(0px);
+      }
+      100% {
+        filter: brightness(1.5) blur(1px);
+      }
+    }
+
+    /* ========== MODERN NEON NAVBAR ========== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(3, 5, 11, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(230, 126, 34, 0.4);
+      z-index: 1000;
+      transition: all 0.3s;
+    }
+    .logo h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(230,126,34,0.5);
+    }
+    .logo h2 span {
+      color: #e67e22;
+      font-weight: 900;
+    }
+    .logo p {
+      font-size: 0.65rem;
+      color: #e67e22;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #b0b8d0;
+      transition: 0.25s;
+      font-size: 0.9rem;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: #e67e22;
+    }
+    .nav-links a.active::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #e67e22;
+      box-shadow: 0 0 8px #e67e22;
+    }
+
+    /* ========== PAGE HEADER ========== */
+    .page-header {
+      padding-top: 120px;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .page-header .neon-chip {
+      display: inline-block;
+      background: rgba(230,126,34,0.15);
+      backdrop-filter: blur(8px);
+      padding: 0.4rem 1.3rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      border: 1px solid #e67e22;
+      box-shadow: 0 0 12px rgba(230,126,34,0.4);
+      letter-spacing: 2px;
+    }
+    .page-header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(95deg, #ffffff, #e67e22, #ffaa55);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .page-header p {
+      color: #9aa4bf;
+      margin-top: 0.5rem;
+    }
+
+    /* ========== CONTACT CONTAINER ========== */
+    .contact-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    /* Contact Info Cards */
+    .contact-info {
+      background: rgba(8, 12, 22, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 2rem;
+      border: 1px solid rgba(230,126,34,0.3);
+      transition: all 0.3s;
+    }
+    .contact-info:hover {
+      border-color: rgba(230,126,34,0.6);
+    }
+    .info-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e67e22;
+    }
+    .info-card {
+      margin-bottom: 2rem;
+    }
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 1rem;
+      transition: all 0.3s;
+    }
+    .info-item:hover {
+      transform: translateX(5px);
+      background: rgba(230,126,34,0.1);
+    }
+    .info-icon {
+      width: 45px;
+      height: 45px;
+      background: rgba(230,126,34,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #e67e22;
+    }
+    .info-detail h4 {
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+    .info-detail p, .info-detail a {
+      color: #b0b8d0;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+    .info-detail a:hover {
+      color: #e67e22;
+    }
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .social-icon {
+      width: 45px;
+      height: 45px;
+      background: rgba(230,126,34,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e67e22;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: 1px solid rgba(230,126,34,0.3);
+      font-size: 1.2rem;
+    }
+    .social-icon:hover {
+      background: #e67e22;
+      color: #000;
+      transform: translateY(-3px);
+      box-shadow: 0 0 15px rgba(230,126,34,0.5);
+    }
+
+    /* Business Hours */
+    .hours-card {
+      background: rgba(0,0,0,0.3);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .hours-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .hours-day {
+      font-weight: 600;
+    }
+    .hours-time {
+      color: #ffaa66;
+    }
+
+    /* Quick Action Buttons */
+    .quick-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .quick-btn {
+      flex: 1;
+      background: rgba(230,126,34,0.15);
+      border: 1px solid rgba(230,126,34,0.4);
+      border-radius: 1rem;
+      padding: 0.8rem;
+      text-align: center;
+      text-decoration: none;
+      color: #e67e22;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .quick-btn:hover {
+      background: #e67e22;
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(230,126,34,0.4);
+    }
+
+    /* Contact Form */
+    .contact-form {
+      background: rgba(8, 12, 22, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 2rem;
+      border: 1px solid rgba(230,126,34,0.3);
+      transition: all 0.3s;
+    }
+    .contact-form:hover {
+      border-color: rgba(230,126,34,0.6);
+    }
+    .form-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e67e22;
+    }
+    .input-group {
+      margin-bottom: 1.2rem;
+    }
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      margin-bottom: 0.5rem;
+      color: #ffbc6e;
+      letter-spacing: 1px;
+    }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(230,126,34,0.4);
+      border-radius: 1rem;
+      padding: 0.8rem;
+      color: white;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+      outline: none;
+      border-color: #e67e22;
+      box-shadow: 0 0 10px rgba(230,126,34,0.3);
+    }
+    .row-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(95deg, #e67e22, #f39c12);
+      border: none;
+      padding: 1rem;
+      border-radius: 60px;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #000;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 1rem;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(230,126,34,0.5);
+    }
+
+    /* Map Section */
+    .map-section {
+      max-width: 1300px;
+      margin: 0 auto 3rem;
+      padding: 0 2rem;
+    }
+    .map-card {
+      background: rgba(8, 12, 22, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(230,126,34,0.3);
+    }
+    .map-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e67e22;
+    }
+    .map-container {
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid rgba(230,126,34,0.3);
+    }
+    iframe {
+      width: 100%;
+      height: 300px;
+      border: 0;
+      display: block;
+    }
+
+    /* Footer */
+    .footer-cyber {
+      background: #010101;
+      border-top: 1px solid rgba(230,126,34,0.3);
+      text-align: center;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .navbar {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.5rem;
+      }
+      .nav-links {
+        gap: 1rem;
+      }
+      .contact-container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+      }
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      .row-2col {
+        grid-template-columns: 1fr;
+      }
+      .contact-form {
+        padding: 1.5rem;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .btn-submit {
+        width: 100%;
+        padding: 1rem;
+      }
+      .floating-buttons {
+        bottom: 20px;
+        right: 20px;
+      }
+      .float-btn {
+        width: 50px;
+        height: 50px;
+      }
+      .float-btn i {
+        font-size: 24px;
+      }
+      .toast-notification {
+        min-width: 300px;
+        max-width: 90vw;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+      .contact-info h3 {
+        font-size: 1.2rem;
+      }
+      .info-item {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="cyber-bg"></div>
+
+<!-- Fire Sprinkle Container -->
+<div id="fireSprinkles"></div>
+
+<!-- Toast Notifications Container -->
+<div id="toastContainer"></div>
+
+<!-- Floating Action Buttons for Direct Call & WhatsApp -->
+<div class="floating-buttons">
+  <a href="tel:+917004499403" class="float-btn float-call" title="Call Now">
+    <i class="fas fa-phone-alt"></i>
+  </a>
+  <a href="https://wa.me/917004499403?text=Hello%20SR%20Subhash%2C%20I%20want%20to%20book%20a%20car%20rental%20service" target="_blank" class="float-btn float-whatsapp" title="WhatsApp Us">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+</div>
+
+<nav class="navbar">
+  <div class="logo">
+    <h2>SR SUBHASH <span>CAR RENTAL</span></h2>
+    <p>✦ 24/7 SUPPORT ✦</p>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="plan.html">Plans</a></li>
+    <li><a href="booking.html">Booking</a></li>
+    <li><a href="contact.html" class="active">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="neon-chip"><i class="fas fa-headset"></i> GET IN TOUCH</div>
+  <h1>Connect With Us</h1>
+  <p>We're here to help 24/7 | Reach out for bookings, queries, or support</p>
+</div>
+
+<div class="contact-container">
+  <!-- Contact Info Section -->
+  <div class="contact-info">
+    <div class="info-title"><i class="fas fa-address-card"></i> Contact Information</div>
+    
+    <div class="info-card">
+      <div class="info-item">
+        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div class="info-detail">
+          <h4>Office Address</h4>
+          <p>SR Subhash Car Rental Service<br>Near Baba Mandir Road, Deoghar<br>Jharkhand - 814112, India</p>
+        </div>
+      </div>
+      
+      <div class="info-item">
+        <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+        <div class="info-detail">
+          <h4>Phone Numbers</h4>
+          <p><a href="tel:+917004499403">+91 70044 99403</a><br>
+          <a href="tel:+919876543211">+91 98765 43211</a> (24/7 Support)</p>
+        </div>
+      </div>
+      
+      
+      <div class="info-item">
+        <div class="info-icon"><i class="fab fa-whatsapp"></i></div>
+        <div class="info-detail">
+          <h4>WhatsApp</h4>
+          <p><a href="https://wa.me/917004499403?text=Hello%20SR%20Subhash%2C%20I%20want%20to%20book%20a%20car%20rental%20service" target="_blank">+91 70044 99403</a> (Instant Replies)</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quick Action Buttons -->
+    <div class="quick-actions">
+      <a href="tel:+917004499403" class="quick-btn">
+        <i class="fas fa-phone-alt"></i> Call Now
+      </a>
+      <a href="https://wa.me/917004499403?text=Hello%20SR%20Subhash%2C%20I%20want%20to%20book%20a%20car%20rental%20service" target="_blank" class="quick-btn">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </a>
+    </div>
+    
+    <div class="info-title" style="font-size:1.2rem; margin-top:1rem;"><i class="fas fa-clock"></i> Business Hours</div>
+    <div class="hours-card">
+      <div class="hours-item">
+    
+      <div class="hours-item">
+        <span class="hours-day">Support </span>
+        <span class="hours-time">24/7 Available</span>
+      </div>
+    </div>
+    
+    <div class="info-title" style="font-size:1.2rem; margin-top:1rem;"><i class="fas fa-share-alt"></i> Follow Us</div>
+    <div class="social-links">
+      <a href="https://www.facebook.com/share/1CWHGRSjgd/" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.instagram.com/karan_choudhary_10?igsh=MWw1dG9vcHh4ZXo0cA==" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+      <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+  
+  <!-- Contact Form Section -->
+  <div class="contact-form">
+    <div class="form-title"><i class="fas fa-paper-plane"></i> Send Us a Message</div>
+    <form id="contactForm">
+      <div class="row-2col">
+        <div class="input-group">
+          <label><i class="fas fa-user"></i> Full Name *</label>
+          <input type="text" id="contactName" required placeholder="Enter your name">
+        </div>
+        <div class="input-group">
+          <label><i class="fas fa-phone"></i> Phone Number *</label>
+          <input type="tel" id="contactPhone" required placeholder="Enter Mobile Number" minlength="10" maxlength="10">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-tag"></i> Subject *</label>
+        <select id="contactSubject">
+          <option value="booking">Booking Inquiry</option>
+          <option value="custom">Custom Tour Request</option>
+          <option value="support">Support / Help</option>
+          <option value="feedback">Feedback / Suggestion</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-comment-dots"></i> Your Message *</label>
+        <textarea id="contactMessage" rows="4" required placeholder="Tell us about your requirements..."></textarea>
+      </div>
+      <button type="submit" class="btn-submit" id="sendMessageBtn"><i class="fas fa-paper-plane"></i> Send Message</button>
+    </form>
+    <div id="formMessage" style="margin-top: 1rem; font-size: 0.8rem; text-align: center; color: #e67e22;"></div>
+  </div>
+</div>
+
+<!-- Map Section -->
+<div class="map-section">
+  <div class="map-card">
+    <div class="map-title"><i class="fas fa-map"></i> Find Us On Map</div>
+    <div class="map-container">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117348.75872242668!2d86.65657935!3d24.48965635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f1277b8cb3c2b1%3A0x8f5c2b5a5a5a5a5a!2sDeoghar%2C%20Jharkhand!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+    <p style="font-size:0.75rem; color:#9aa4bf; margin-top:1rem; text-align:center;">
+      <i class="fas fa-location-dot"></i> Located near Baba Mandir Road, Deoghar — Easy access from Railway Station & Bus Stand
+    </p>
+  </div>
+</div>
+
+<!-- Quick Support Banner -->
+<div style="max-width: 1300px; margin: 0 auto 2rem; padding: 0 2rem;">
+  <div style="background: linear-gradient(135deg, rgba(230,126,34,0.1), rgba(0,0,0,0.3)); border-radius: 1rem; padding: 1rem; text-align: center; border: 1px solid rgba(230,126,34,0.3);">
+    <p><i class="fas fa-headset" style="color:#e67e22;"></i> <strong>Need immediate assistance?</strong> Call us 24/7 at <strong style="color:#e67e22;">+91 70044 99403</strong> or click the WhatsApp button for instant replies.</p>
+  </div>
+</div>
+
+<footer class="footer-cyber">
+  <p>SR SUBHASH CAR RENTAL SERVICE — Your Trusted Travel Partner Since 2012</p>
+  <p style="font-size:0.7rem; margin-top:0.5rem;">© 2025 | All Rights Reserved | Designed with <i class="fas fa-heart" style="color:#e67e22;"></i> for Premium Travelers</p>
+</footer>
+
+<script>
+  const sendBtn = document.getElementById('sendMessageBtn');
+  const contactForm = document.getElementById('contactForm');
+  const formMessageDiv = document.getElementById('formMessage');
+  const toastContainer = document.getElementById('toastContainer');
+  const fireSprinkles = document.getElementById('fireSprinkles');
+  
+  // Initialize star particles
+  // initStarParticles();
+  
+  contactForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    // Get form values
+    const name = document.getElementById('contactName').value.trim();
+    const phone = document.getElementById('contactPhone').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const subject = document.getElementById('contactSubject').value;
+    const message = document.getElementById('contactMessage').value.trim();
+    
+    // Validation
+    if (!name) {
+      showToast('Please enter your full name', 'error');
+      return;
+    }
+    if (!phone) {
+      showToast('Please enter your phone number', 'error');
+      return;
+    }
+    const phoneOnly = phone.replace(/\D/g, '');
+    if (!/^\d{10}$/.test(phoneOnly)) {
+      showToast('Please enter a valid 10-digit phone number', 'error');
+      return;
+    }
+    if (!email) {
+      showToast('Please enter your email address', 'error');
+      return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      showToast('Please enter a valid email address', 'error');
+      return;
+    }
+    if (!message) {
+      showToast('Please enter your message', 'error');
+      return;
+    }
+    
+    // Get subject text
+    const subjectText = {
+      'booking': 'Booking Inquiry',
+      'custom': 'Custom Tour Request',
+      'support': 'Support / Help',
+      'feedback': 'Feedback / Suggestion',
+      'other': 'Other'
+    }[subject];
+    
+    // Store message in Firebase
+    const contactData = {
+      name: name,
+      phone: phone,
+      email: email,
+      subject: subjectText,
+      message: message,
+      date: new Date().toLocaleString(),
+      messageId: 'MSG' + Date.now() + Math.random().toString(36).substr(2, 5),
+      timestamp: Date.now()
+    };
+    
+    try {
+      // Store in Firebase using messageId key (ensures unique reference for admin)
+      const contactsRef = window.ref(window.database, `contacts/${contactData.messageId}`);
+      await window.set(contactsRef, contactData);
+      
+      // Also keep in localStorage for backward compatibility
+      const allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
+      allContacts.push(contactData);
+      localStorage.setItem('allContacts', JSON.stringify(allContacts));
+      
+      showToast(`Message Sent Successfully! Reference ID: ${contactData.messageId}`, 'success');
+    } catch (error) {
+      console.error('Error saving to Firebase:', error);
+      // Fallback to localStorage only
+      const allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
+      allContacts.push(contactData);
+      localStorage.setItem('allContacts', JSON.stringify(allContacts));
+      localStorage.setItem('lastContactMessage', JSON.stringify(contactData));
+      
+      showToast(`Message Sent Successfully! Reference ID: ${contactData.messageId}`, 'success');
+    }
+    
+    // Clear form
+    document.getElementById('contactForm').reset();
+    
+    // Optional: In a real scenario, you would send this to a backend API
+    console.log('Contact Form Data:', contactData);
+  });
+  
+  function showError(message) {
+    formMessageDiv.innerHTML = message;
+    formMessageDiv.style.color = '#ff4444';
+    formMessageDiv.style.background = 'rgba(255, 68, 68, 0.2)';
+    formMessageDiv.style.padding = '1rem';
+    formMessageDiv.style.borderRadius = '1rem';
+    formMessageDiv.style.border = '2px solid #ff4444';
+    formMessageDiv.style.fontSize = '1rem';
+    formMessageDiv.style.fontWeight = 'bold';
+    formMessageDiv.style.textAlign = 'center';
+    formMessageDiv.style.boxShadow = '0 0 20px rgba(255, 68, 68, 0.3)';
+    
+    // Shake animation for error
+    formMessageDiv.style.animation = 'shake 0.5s ease-in-out';
+    
+    setTimeout(() => {
+      formMessageDiv.innerHTML = '';
+      formMessageDiv.style.padding = '0';
+      formMessageDiv.style.background = 'transparent';
+      formMessageDiv.style.border = 'none';
+      formMessageDiv.style.boxShadow = 'none';
+      formMessageDiv.style.animation = 'none';
+    }, 4000);
+  }
+  
+  function showMessage(msg, type) {
+    formMessageDiv.innerHTML = msg.replace(/\n/g, '<br>');
+    formMessageDiv.style.color = type === 'error' ? '#ff8866' : '#e67e22';
+    formMessageDiv.style.background = type === 'error' ? 'rgba(255,68,68,0.1)' : 'rgba(230,126,34,0.1)';
+    formMessageDiv.style.padding = '0.8rem';
+    formMessageDiv.style.borderRadius = '1rem';
+    formMessageDiv.style.border = `1px solid ${type === 'error' ? '#ff8866' : '#e67e22'}`;
+    
+    setTimeout(() => {
+      formMessageDiv.innerHTML = '';
+      formMessageDiv.style.padding = '0';
+      formMessageDiv.style.background = 'transparent';
+      formMessageDiv.style.border = 'none';
+    }, 5000);
+  }
+  
+  function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    
+    const icon = type === 'success' ? '✅' : '❌';
+    const title = type === 'success' ? 'Success!' : 'Failed!';
+    
+    toast.innerHTML = `
+      <span class="icon">${icon}</span>
+      <div class="message">
+        <strong>${title}</strong><br>
+        ${message}
+      </div>
+      <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      if (toast.parentElement) {
+        toast.style.animation = 'slideOutUp 0.5s ease-in';
+        setTimeout(() => toast.remove(), 500);
+      }
+    }, 5000);
+  }
+  
+  function initStarParticles() {
+    const container = document.body;
+    const particleCount = 50;
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'star-particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 4 + 's';
+      container.appendChild(particle);
+    }
+  }
+  
+  // Pre-fill from URL if needed
+  const urlParams = new URLSearchParams(window.location.search);
+  const queryType = urlParams.get('type');
+  if (queryType === 'booking') {
+    document.getElementById('contactSubject').value = 'booking';
+  } else if (queryType === 'support') {
+    document.getElementById('contactSubject').value = 'support';
+  }
+</script>
+</body>
+</html>

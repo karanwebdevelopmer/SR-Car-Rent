@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SR Subhash | Book Your Ride</title>
+  <!-- Google Fonts + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDd5lR5hbpLvUzeBJstQ8sNWgv6RcHCH7U",
+      authDomain: "car-website-1637b.firebaseapp.com",
+      databaseURL: "https://car-website-1637b-default-rtdb.firebaseio.com",
+      projectId: "car-website-1637b",
+      storageBucket: "car-website-1637b.firebasestorage.app",
+      messagingSenderId: "535352425150",
+      appId: "1:535352425150:web:7f344485ccfc736cfffcef",
+      measurementId: "G-R38Z527CGL"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+
+    // Make database available globally
+    window.database = database;
+    window.ref = ref;
+    window.push = push;
+    window.set = set;
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: #03050b;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* ========== DARK CYBER BACKGROUND ========== */
+    .cyber-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(ellipse at 20% 30%, #0a0f1a, #020408);
+    }
+    .cyber-bg::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        repeating-linear-gradient(0deg, rgba(230,126,34,0.03) 0px, rgba(230,126,34,0.03) 1px, transparent 1px, transparent 4px),
+        repeating-linear-gradient(90deg, rgba(230,126,34,0.03) 0px, rgba(230,126,34,0.03) 1px, transparent 1px, transparent 4px);
+      pointer-events: none;
+    }
+
+    /* ========== MODERN NEON NAVBAR ========== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(3, 5, 11, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(230, 126, 34, 0.4);
+      z-index: 1000;
+      transition: all 0.3s;
+    }
+    .logo h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(230,126,34,0.5);
+    }
+    .logo h2 span {
+      color: #e67e22;
+      font-weight: 900;
+    }
+    .logo p {
+      font-size: 0.65rem;
+      color: #e67e22;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #b0b8d0;
+      transition: 0.25s;
+      font-size: 0.9rem;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: #e67e22;
+    }
+    .nav-links a.active::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #e67e22;
+      box-shadow: 0 0 8px #e67e22;
+    }
+
+    /* ========== PAGE HEADER ========== */
+    .page-header {
+      padding-top: 120px;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .page-header .neon-chip {
+      display: inline-block;
+      background: rgba(230,126,34,0.15);
+      backdrop-filter: blur(8px);
+      padding: 0.4rem 1.3rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      border: 1px solid #e67e22;
+      box-shadow: 0 0 12px rgba(230,126,34,0.4);
+      letter-spacing: 2px;
+    }
+    .page-header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(95deg, #ffffff, #e67e22, #ffaa55);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .page-header p {
+      color: #9aa4bf;
+      margin-top: 0.5rem;
+    }
+
+    /* ========== BOOKING CONTAINER ========== */
+    .booking-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    /* Form Section */
+    .booking-form {
+      background: rgba(8, 12, 22, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 2rem;
+      border: 1px solid rgba(230,126,34,0.3);
+      transition: all 0.3s;
+    }
+    .booking-form:hover {
+      border-color: rgba(230,126,34,0.6);
+    }
+    .form-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e67e22;
+    }
+    .input-group {
+      margin-bottom: 1.2rem;
+    }
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      margin-bottom: 0.5rem;
+      color: #ffbc6e;
+      letter-spacing: 1px;
+    }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(230,126,34,0.4);
+      border-radius: 1rem;
+      padding: 0.8rem;
+      color: white;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+      outline: none;
+      border-color: #e67e22;
+      box-shadow: 0 0 10px rgba(230,126,34,0.3);
+    }
+    .row-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(95deg, #e67e22, #f39c12);
+      border: none;
+      padding: 1rem;
+      border-radius: 60px;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #000;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 1rem;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(230,126,34,0.5);
+    }
+
+    /* Summary Section */
+    .booking-summary {
+      background: rgba(8, 12, 22, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 2rem;
+      border: 1px solid rgba(230,126,34,0.3);
+      position: sticky;
+      top: 100px;
+    }
+    .summary-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e67e22;
+    }
+    .selected-plan {
+      background: rgba(0,0,0,0.4);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .plan-detail {
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+    }
+    .price-breakdown {
+      border-top: 1px solid rgba(230,126,34,0.3);
+      padding-top: 1rem;
+      margin-top: 1rem;
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+    }
+    .total-price {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #e67e22;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid rgba(230,126,34,0.5);
+    }
+    .vehicle-option {
+      display: flex;
+      gap: 1rem;
+      padding: 0.8rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 1rem;
+      margin-bottom: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .vehicle-option.selected {
+      border-color: #e67e22;
+      background: rgba(230,126,34,0.1);
+    }
+    .vehicle-option:hover {
+      border-color: rgba(230,126,34,0.5);
+    }
+    .vehicle-name {
+      font-weight: 700;
+    }
+    .vehicle-price {
+      color: #ffaa66;
+    }
+
+    @media (max-width: 900px) {
+      .navbar {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.5rem;
+      }
+      .nav-links {
+        gap: 1rem;
+      }
+      .booking-container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+      }
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      .form-section, .summary-section {
+        padding: 1rem;
+      }
+      .vehicle-option {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .vehicle-price {
+        align-self: flex-end;
+      }
+      .price-breakdown {
+        font-size: 0.9rem;
+      }
+      .toast-notification {
+        min-width: 300px;
+        max-width: 90vw;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+      .form-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .form-group label {
+        margin-bottom: 0.5rem;
+      }
+      .btn-submit {
+        width: 100%;
+        padding: 1rem;
+      }
+      .vehicle-name {
+        font-size: 1rem;
+      }
+      .vehicle-price {
+        font-size: 1.1rem;
+      }
+    }
+
+    /* Shake animation for errors */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    /* Toast Notification Styles */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      min-width: 350px;
+      max-width: 500px;
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      border: 2px solid;
+      animation: slideInDown 0.5s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast-notification.success {
+      background: rgba(76, 175, 80, 0.9);
+      border-color: #4CAF50;
+      color: white;
+    }
+
+    .toast-notification.error {
+      background: rgba(244, 67, 54, 0.9);
+      border-color: #f44336;
+      color: white;
+      animation: slideInDown 0.5s ease-out, shake 0.5s ease-in-out 0.5s;
+    }
+
+    .toast-notification .icon {
+      font-size: 1.5rem;
+    }
+
+    .toast-notification .message {
+      flex: 1;
+    }
+
+    .toast-notification .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .toast-notification .close-btn:hover {
+      opacity: 1;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutUp {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    /* Glowing Star Particles */
+    .star-particle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+
+    .star-particle::before {
+      content: '·';
+      font-size: 2rem;
+      color: #ffffff;
+      text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #e67e22,
+        0 0 15px #ff6b35,
+        0 0 20px #ff4500;
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(0px);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1) translateY(-20px);
+      }
+    }
+
+    @keyframes glow {
+      0% {
+        filter: brightness(1) blur(0px);
+      }
+      100% {
+        filter: brightness(1.5) blur(1px);
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="cyber-bg"></div>
+
+<!-- Fire Sprinkle Container -->
+<div id="fireSprinkles"></div>
+
+<!-- Toast Notifications Container -->
+<div id="toastContainer"></div>
+
+<nav class="navbar">
+  <div class="logo">
+    <h2>SR SUBHASH <span>CAR RENTAL</span></h2>
+    <p>✦ BOOK YOUR RIDE ✦</p>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="plan.html">Plans</a></li>
+    <li><a href="booking.html" class="active">Booking</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="neon-chip"><i class="fas fa-calendar-check"></i> SECURE YOUR JOURNEY</div>
+  <h1>Book Your Premium Ride</h1>
+  <p>Fill the details below to confirm your booking with SR Subhash</p>
+</div>
+
+<div class="booking-container">
+  <!-- Booking Form -->
+  <div class="booking-form">
+    <div class="form-title"><i class="fas fa-user-circle"></i> Traveler Details</div>
+    <form id="bookingForm">
+      <div class="row-2col">
+        <div class="input-group">
+          <label><i class="fas fa-user"></i> Full Name *</label>
+          <input type="text" id="fullName" required placeholder="Enter your full name">
+        </div>
+        <div class="input-group">
+          <label><i class="fas fa-phone"></i> Phone Number *</label>
+          <input type="tel" id="phone" required placeholder="Enter your phone number">
+        </div>
+      </div>
+    
+      <div class="row-2col">
+        <div class="input-group">
+          <label><i class="fas fa-calendar-day"></i> Pickup Date *</label>
+          <input type="date" id="pickupDate" required>
+        </div>
+        <div class="input-group">
+          <label><i class="fas fa-clock"></i> Pickup Time *</label>
+          <input type="time" id="pickupTime" required>
+        </div>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-map-marker-alt"></i> Pickup Location *</label>
+        <input type="text" id="pickupLocation" required placeholder="Hotel / Airport / Address">
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-flag-checkered"></i> Tour Plan / Package *</label>
+        <select id="tourPlan">
+          <option value="5places">Divine Explorer - 5 Places (Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban, Shivganga)</option>
+          <option value="4places">Spiritual Circuit - 4 Places (Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban)</option>
+          <option value="babaonly">Baba Mandir Darshan - 1 Place</option>
+          <option value="custom">Custom Tour (As per your requirements)</option>
+        </select>
+      </div>
+      <div class="input-group" id="customPlacesGroup" style="display:none;">
+        <label><i class="fas fa-map-pin"></i> Custom Destinations (comma separated)</label>
+        <textarea id="customPlaces" rows="2" placeholder="e.g., Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban"></textarea>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-comment-dots"></i> Special Requests</label>
+        <textarea id="specialRequest" rows="2" placeholder="Any specific requirements?"></textarea>
+      </div>
+      <button type="button" class="btn-submit" id="confirmBookingBtn"><i class="fas fa-check-circle"></i> Confirm Booking</button>
+    </form>
+    <div id="bookingMessage" style="margin-top: 1rem; text-align: center;"></div>
+  </div>
+
+  <!-- Booking Summary -->
+  <div class="booking-summary">
+    <div class="summary-title"><i class="fas fa-receipt"></i> Booking Summary</div>
+    <div class="selected-plan">
+      <div class="plan-detail"><strong>Selected Plan:</strong> <span id="selectedPlanName">Divine Explorer - 5 Places</span></div>
+      <div class="plan-detail"><strong>Custom Destinations:</strong> <span id="customDestSummary">-</span></div>
+    </div>
+    
+    <div class="form-title" style="font-size:1.2rem; margin-top:1rem;"><i class="fas fa-car"></i> Select Vehicle</div>
+    <div id="vehicleOptions">
+      <div class="vehicle-option selected" data-vehicle="sedan" data-price="3000">
+        <div style="flex:1">
+          <div class="vehicle-name"><i class="fas fa-car"></i> Luxury Sedan</div>
+          <div style="font-size:0.75rem; color:#aaa;">Honda City / Similar | 4 Seater | AC | Professional Driver</div>
+        </div>
+        <div class="vehicle-price">₹3,000/day</div>
+      </div>
+    </div>
+
+    <div class="price-breakdown">
+      <div class="price-row">
+        <span>Vehicle Rent (per day)</span>
+        <span id="vehiclePriceDisplay">₹3,000</span>
+      </div>
+      <div class="price-row">
+        <span>Driver Charges</span>
+        <span>₹1,000</span>
+      </div>
+      <div class="price-row">
+        <span>Fuel & Taxes</span>
+        <span>Included</span>
+      </div>
+      <div class="total-price">
+        <span>Total Amount</span>
+        <span id="totalAmount">₹4,000</span>
+      </div>
+      <p style="font-size:0.7rem; color:#ffaa66; margin-top:0.5rem; text-align:center;"><i class="fas fa-info-circle"></i> Prices are indicative and may vary based on actual locations and duration. Final pricing will be confirmed upon booking.</p>
+      <p style="font-size:0.7rem; color:#aaa; margin-top:0.5rem;"><i class="fas fa-shield-alt"></i> 100% Secure Booking | No Hidden Charges | Professional Drivers</p>
+    </div>
+  </div>
+</div>
+
+<footer class="footer-cyber" style="background: #010101; border-top: 1px solid rgba(230,126,34,0.3); text-align: center; padding: 2rem; margin-top: 2rem;">
+  <p>SR SUBHASH CAR RENTAL SERVICE — Safe • Reliable • Premium</p>
+  <p style="font-size:0.7rem; margin-top:0.5rem;">© 2025 | 24/7 Customer Support | Book with Confidence</p>
+</footer>
+
+<script>
+  // Get DOM elements
+  const tourPlanSelect = document.getElementById('tourPlan');
+  const customPlacesGroup = document.getElementById('customPlacesGroup');
+  const customPlacesInput = document.getElementById('customPlaces');
+  const selectedPlanNameSpan = document.getElementById('selectedPlanName');
+  const customDestSummarySpan = document.getElementById('customDestSummary');
+  const vehicleOptions = document.querySelectorAll('.vehicle-option');
+  const vehiclePriceDisplay = document.getElementById('vehiclePriceDisplay');
+  const totalAmountSpan = document.getElementById('totalAmount');
+  const confirmBtn = document.getElementById('confirmBookingBtn');
+  const bookingMessageDiv = document.getElementById('bookingMessage');
+  const toastContainer = document.getElementById('toastContainer');
+  const fireSprinkles = document.getElementById('fireSprinkles');
+  
+  // Initialize fire sprinkles
+  // initStarParticles();
+  
+  let selectedVehiclePrice = 3000;
+  let selectedVehicleName = "Luxury Sedan";
+  
+  // Plan names mapping
+  const planNames = {
+    '5places': 'Divine Explorer - 5 Places (Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban, Shivganga)',
+    '4places': 'Spiritual Circuit - 4 Places (Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban)',
+    'babaonly': 'Baba Mandir Darshan - 1 Place',
+    'custom': 'Custom Tour (Build Your Own)'
+  };
+  
+  // Handle tour plan change
+  tourPlanSelect.addEventListener('change', function() {
+    const selectedValue = this.value;
+    selectedPlanNameSpan.textContent = planNames[selectedValue] || planNames['5places'];
+    
+    if (selectedValue === 'custom') {
+      customPlacesGroup.style.display = 'block';
+      if (customPlacesInput.value.trim()) {
+        customDestSummarySpan.textContent = customPlacesInput.value;
+      } else {
+        customDestSummarySpan.textContent = 'Not specified yet';
+      }
+    } else {
+      customPlacesGroup.style.display = 'none';
+      customDestSummarySpan.textContent = '-';
+    }
+    
+    // Load custom data from localStorage if coming from plans page
+    loadCustomFromStorage();
+  });
+  
+  // Handle custom places input
+  customPlacesInput.addEventListener('input', function() {
+    if (this.value.trim()) {
+      customDestSummarySpan.textContent = this.value;
+    } else {
+      customDestSummarySpan.textContent = 'Not specified yet';
+    }
+  });
+  
+  // Vehicle selection (only one option now)
+  vehicleOptions.forEach(option => {
+    option.addEventListener('click', function() {
+      // Since there's only one option, just ensure it's selected
+      this.classList.add('selected');
+      selectedVehiclePrice = parseInt(this.dataset.price);
+      selectedVehicleName = this.querySelector('.vehicle-name').innerText;
+      vehiclePriceDisplay.textContent = `₹${selectedVehiclePrice.toLocaleString()}`;
+      updateTotal();
+    });
+  });
+  
+  // Select the only vehicle by default
+  if(vehicleOptions.length > 0) {
+    vehicleOptions[0].classList.add('selected');
+    selectedVehiclePrice = 3000;
+    vehiclePriceDisplay.textContent = '₹3,000';
+  }
+  
+  function updateTotal() {
+    const driverCharge = 1000;
+    const total = selectedVehiclePrice + driverCharge;
+    totalAmountSpan.textContent = `₹${total.toLocaleString()}`;
+  }
+  
+  function showBookingError(message) {
+    bookingMessageDiv.innerHTML = message;
+    bookingMessageDiv.style.color = '#ff4444';
+    bookingMessageDiv.style.background = 'rgba(255, 68, 68, 0.2)';
+    bookingMessageDiv.style.padding = '1rem';
+    bookingMessageDiv.style.borderRadius = '1rem';
+    bookingMessageDiv.style.border = '2px solid #ff4444';
+    bookingMessageDiv.style.fontSize = '1rem';
+    bookingMessageDiv.style.fontWeight = 'bold';
+    bookingMessageDiv.style.boxShadow = '0 0 20px rgba(255, 68, 68, 0.3)';
+    
+    // Shake animation for error
+    bookingMessageDiv.style.animation = 'shake 0.5s ease-in-out';
+    
+    setTimeout(() => {
+      bookingMessageDiv.innerHTML = '';
+      bookingMessageDiv.style.padding = '0';
+      bookingMessageDiv.style.background = 'transparent';
+      bookingMessageDiv.style.border = 'none';
+      bookingMessageDiv.style.boxShadow = 'none';
+      bookingMessageDiv.style.animation = 'none';
+    }, 4000);
+  }
+  
+  function showBookingSuccess(message) {
+    bookingMessageDiv.innerHTML = message;
+    bookingMessageDiv.style.color = '#4CAF50';
+    bookingMessageDiv.style.background = 'rgba(76, 175, 80, 0.2)';
+    bookingMessageDiv.style.padding = '1rem';
+    bookingMessageDiv.style.borderRadius = '1rem';
+    bookingMessageDiv.style.border = '2px solid #4CAF50';
+    bookingMessageDiv.style.fontSize = '1rem';
+    bookingMessageDiv.style.fontWeight = 'bold';
+    bookingMessageDiv.style.boxShadow = '0 0 20px rgba(76, 175, 80, 0.3)';
+    
+    setTimeout(() => {
+      bookingMessageDiv.innerHTML = '';
+      bookingMessageDiv.style.padding = '0';
+      bookingMessageDiv.style.background = 'transparent';
+      bookingMessageDiv.style.border = 'none';
+      bookingMessageDiv.style.boxShadow = 'none';
+    }, 6000);
+  }
+  
+  function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    
+    const icon = type === 'success' ? '✅' : '❌';
+    const title = type === 'success' ? 'Success!' : 'Failed!';
+    
+    toast.innerHTML = `
+      <span class="icon">${icon}</span>
+      <div class="message">
+        <strong>${title}</strong><br>
+        ${message}
+      </div>
+      <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      if (toast.parentElement) {
+        toast.style.animation = 'slideOutUp 0.5s ease-in';
+        setTimeout(() => toast.remove(), 500);
+      }
+    }, 5000);
+  }
+  
+  function initStarParticles() {
+    const container = document.body;
+    const particleCount = 50;
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'star-particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 4 + 's';
+      container.appendChild(particle);
+    }
+  }
+  
+  // Load custom tour data from localStorage (from plans page)
+  function loadCustomFromStorage() {
+    const customData = localStorage.getItem('customTourData');
+    if (customData) {
+      const data = JSON.parse(customData);
+      if (data.destinations && tourPlanSelect.value === 'custom') {
+        customPlacesInput.value = data.destinations;
+        customDestSummarySpan.textContent = data.destinations;
+        if (data.date) {
+          const dateInput = document.getElementById('pickupDate');
+          if (dateInput && !dateInput.value) {
+            dateInput.value = data.date;
+          }
+        }
+        if (data.special) {
+          const specialInput = document.getElementById('specialRequest');
+          if (specialInput && !specialInput.value) {
+            specialInput.value = data.special;
+          }
+        }
+      }
+      // Clear after loading to avoid reuse
+      localStorage.removeItem('customTourData');
+    }
+  }
+  
+  // Check URL params for plan selection
+  function loadFromUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const plan = urlParams.get('plan');
+    const customParam = urlParams.get('custom');
+    
+    if (plan === '5places') {
+      tourPlanSelect.value = '5places';
+      tourPlanSelect.dispatchEvent(new Event('change'));
+    } else if (plan === '4places') {
+      tourPlanSelect.value = '4places';
+      tourPlanSelect.dispatchEvent(new Event('change'));
+    } else if (plan === 'babaonly') {
+      tourPlanSelect.value = 'babaonly';
+      tourPlanSelect.dispatchEvent(new Event('change'));
+    } else if (customParam === 'true') {
+      tourPlanSelect.value = 'custom';
+      tourPlanSelect.dispatchEvent(new Event('change'));
+    }
+  }
+  
+  // Handle booking confirmation
+  confirmBtn.addEventListener('click', async function() {
+    // Validate required fields
+    const fullName = document.getElementById('fullName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const pickupDate = document.getElementById('pickupDate').value;
+    const pickupTime = document.getElementById('pickupTime').value;
+    const pickupLocation = document.getElementById('pickupLocation').value.trim();
+    
+    if (!fullName || !phone || !email || !pickupDate || !pickupTime || !pickupLocation) {
+      showToast('Please fill all required fields!', 'error');
+      return;
+    }
+    
+    if (!email.includes('@') || !email.includes('.')) {
+      showToast('Please enter a valid email address!', 'error');
+      return;
+    }
+    
+    const phoneOnly = phone.replace(/\D/g, '');
+    if (!/^\d{10}$/.test(phoneOnly)) {
+      showToast('Please enter a valid 10-digit phone number!', 'error');
+      return;
+    }
+    
+    // Collect booking data
+    const tourPlan = tourPlanSelect.value;
+    let destinations = '';
+    if (tourPlan === 'custom') {
+      destinations = customPlacesInput.value.trim() || 'Not specified';
+    } else {
+      destinations = planNames[tourPlan];
+    }
+    
+    const bookingData = {
+      name: fullName,
+      phone: phone,
+      email: email,
+      pickupDate: pickupDate,
+      pickupTime: pickupTime,
+      pickupLocation: pickupLocation,
+      tourPlan: destinations,
+      vehicle: selectedVehicleName,
+      vehiclePrice: selectedVehiclePrice,
+      totalAmount: selectedVehiclePrice + 1000,
+      specialRequest: document.getElementById('specialRequest').value.trim() || 'None',
+      bookingId: 'SR' + Date.now() + Math.random().toString(36).substr(2, 5),
+      bookingDate: new Date().toLocaleString()
+    };
+    
+    // Store booking in localStorage for confirmation page
+    localStorage.setItem('currentBooking', JSON.stringify(bookingData));
+    
+    try {
+      // Store in Firebase
+      const bookingsRef = window.ref(window.database, 'bookings');
+      const newBookingRef = window.push(bookingsRef);
+      await window.set(newBookingRef, bookingData);
+      
+      // Also store in localStorage for backward compatibility
+      const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+      allBookings.push(bookingData);
+      localStorage.setItem('allBookings', JSON.stringify(allBookings));
+    } catch (error) {
+      console.error('Error saving to Firebase:', error);
+      // Fallback to localStorage only
+      const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+      allBookings.push(bookingData);
+      localStorage.setItem('allBookings', JSON.stringify(allBookings));
+    }
+    
+    // Show success message
+    showToast(`Booking Confirmed! ID: ${bookingData.bookingId}`, 'success');
+    
+    // Clear form
+    document.getElementById('bookingForm').reset();
+    customPlacesGroup.style.display = 'none';
+    customDestSummarySpan.textContent = '-';
+    
+    // Reset to default plan
+    tourPlanSelect.value = '5places';
+    selectedPlanNameSpan.textContent = planNames['5places'];
+    
+    // Reset vehicle selection
+    vehicleOptions.forEach((opt) => {
+      opt.classList.add('selected'); // Keep the only option selected
+    });
+    selectedVehiclePrice = 3000;
+    vehiclePriceDisplay.textContent = '₹3,000';
+    updateTotal();
+    
+    // Optionally redirect to a confirmation page (can be added later)
+    // window.location.href = "confirmation.html";
+  });
+  
+  // Initialize
+  updateTotal();
+  loadFromUrlParams();
+  loadCustomFromStorage();
+</script>
+</body>
+</html>

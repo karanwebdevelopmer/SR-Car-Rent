@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SR Subhash | Tour Plans & Packages</title>
+  <!-- Google Fonts + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: #03050b;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* ========== DARK CYBER BACKGROUND ========== */
+    .cyber-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(ellipse at 20% 30%, #0a0f1a, #020408);
+    }
+    .cyber-bg::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        repeating-linear-gradient(0deg, rgba(230,126,34,0.03) 0px, rgba(230,126,34,0.03) 1px, transparent 1px, transparent 4px),
+        repeating-linear-gradient(90deg, rgba(230,126,34,0.03) 0px, rgba(230,126,34,0.03) 1px, transparent 1px, transparent 4px);
+      pointer-events: none;
+    }
+
+    /* ========== MODERN NEON NAVBAR ========== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(3, 5, 11, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(230, 126, 34, 0.4);
+      z-index: 1000;
+      transition: all 0.3s;
+    }
+    .logo h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(230,126,34,0.5);
+    }
+    .logo h2 span {
+      color: #e67e22;
+      font-weight: 900;
+    }
+    .logo p {
+      font-size: 0.65rem;
+      color: #e67e22;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #b0b8d0;
+      transition: 0.25s;
+      font-size: 0.9rem;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: #e67e22;
+    }
+    .nav-links a.active::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #e67e22;
+      box-shadow: 0 0 8px #e67e22;
+    }
+
+    /* ========== PAGE HEADER ========== */
+    .page-header {
+      padding-top: 120px;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .page-header .neon-chip {
+      display: inline-block;
+      background: rgba(230,126,34,0.15);
+      backdrop-filter: blur(8px);
+      padding: 0.4rem 1.3rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      border: 1px solid #e67e22;
+      box-shadow: 0 0 12px rgba(230,126,34,0.4);
+      letter-spacing: 2px;
+    }
+    .page-header h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      background: linear-gradient(95deg, #ffffff, #e67e22, #ffaa55);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .page-header p {
+      color: #9aa4bf;
+      margin-top: 0.5rem;
+    }
+
+    /* ========== PLANS GRID ========== */
+    .plans-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    /* Plan Card - Cyber Style */
+    .plan-card {
+      background: rgba(8, 12, 22, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 2rem;
+      border: 1px solid rgba(230,126,34,0.3);
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+    .plan-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #e67e22, transparent);
+      transform: scaleX(0);
+      transition: transform 0.4s;
+    }
+    .plan-card:hover::after {
+      transform: scaleX(1);
+    }
+    .plan-card:hover {
+      border-color: #e67e22;
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(230,126,34,0.2);
+    }
+    .plan-icon {
+      font-size: 2.5rem;
+      color: #e67e22;
+      margin-bottom: 1rem;
+    }
+    .plan-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .plan-price {
+      font-size: 1rem;
+      color: #ffaa66;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      border-bottom: 1px dashed rgba(230,126,34,0.3);
+      display: inline-block;
+      padding-bottom: 4px;
+    }
+    .destinations-list {
+      margin: 1.5rem 0;
+      list-style: none;
+    }
+    .destinations-list li {
+      padding: 0.6rem 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.9rem;
+    }
+    .destinations-list li i {
+      color: #e67e22;
+      width: 24px;
+    }
+    .btn-cyber-plan {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      background: transparent;
+      border: 2px solid #e67e22;
+      padding: 0.8rem;
+      border-radius: 60px;
+      font-weight: 700;
+      color: #e67e22;
+      text-decoration: none;
+      transition: all 0.3s;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+    .btn-cyber-plan:hover {
+      background: #e67e22;
+      color: #000;
+      box-shadow: 0 0 20px rgba(230,126,34,0.5);
+    }
+
+    /* Custom Plan Special Card */
+    .custom-plan {
+      grid-column: span 2;
+      background: linear-gradient(135deg, rgba(230,126,34,0.12), rgba(10, 15, 26, 0.95));
+      border: 2px solid rgba(230,126,34,0.5);
+    }
+    .custom-plan .plan-title {
+      color: #e67e22;
+    }
+    .custom-input-group {
+      margin: 1rem 0;
+    }
+    .custom-input-group label {
+      display: block;
+      font-size: 0.75rem;
+      margin-bottom: 0.5rem;
+      color: #ffbc6e;
+      letter-spacing: 1px;
+    }
+    .custom-input-group input, .custom-input-group textarea {
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(230,126,34,0.4);
+      border-radius: 1rem;
+      padding: 0.8rem;
+      color: white;
+      font-family: inherit;
+      resize: vertical;
+    }
+    .custom-input-group input:focus, .custom-input-group textarea:focus {
+      outline: none;
+      border-color: #e67e22;
+      box-shadow: 0 0 10px rgba(230,126,34,0.3);
+    }
+    .btn-custom {
+      background: #e67e22;
+      border: none;
+      color: #000;
+      font-weight: 800;
+    }
+    .btn-custom:hover {
+      background: #ff9a44;
+      box-shadow: 0 0 20px #e67e22;
+    }
+
+    /* Info Section */
+    .info-section {
+      max-width: 1400px;
+      margin: 0 auto 3rem;
+      padding: 0 2rem;
+    }
+    .info-card {
+      background: rgba(8, 12, 22, 0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+      border: 1px solid rgba(230,126,34,0.3);
+    }
+    .info-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+      color: #e67e22;
+    }
+    .places-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .place-item {
+      background: rgba(0,0,0,0.3);
+      border-radius: 1rem;
+      padding: 0.8rem;
+      border-left: 3px solid #e67e22;
+    }
+    .place-item strong {
+      color: #ffaa66;
+    }
+
+    /* Footer */
+    .footer-cyber {
+      background: #010101;
+      border-top: 1px solid rgba(230,126,34,0.3);
+      text-align: center;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 850px) {
+      .navbar {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.5rem;
+      }
+      .nav-links {
+        gap: 1rem;
+      }
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      .custom-plan {
+        grid-column: span 1;
+      }
+      .plans-container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="cyber-bg"></div>
+
+<nav class="navbar">
+  <div class="logo">
+    <h2>SR SUBHASH <span>CAR RENTAL</span></h2>
+    <p>✦ TOUR PLANNER ✦</p>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="plan.html" class="active">Plans</a></li>
+    <li><a href="booking.html">Booking</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="neon-chip"><i class="fas fa-map-marked-alt"></i> PILGRIMAGE & NATURE TOURS</div>
+  <h1>Choose Your Journey</h1>
+  <p>Explore Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban and more</p>
+</div>
+
+<div class="plans-container">
+  <!-- Plan 1: 5 Jagah (Complete Darshan) -->
+  <div class="plan-card">
+    <div class="plan-icon"><i class="fas fa-mountain-sun"></i></div>
+    <div class="plan-title">Divine Explorer</div>
+    <div class="plan-price">⭐ 5 Sacred Places | Full Day Tour</div>
+    <ul class="destinations-list">
+      <li><i class="fas fa-temple"></i> <strong>Baba Mandir</strong> - Holy shrine & panoramic views</li>
+      <li><i class="fas fa-tree"></i> <strong>Nandan Pahad</strong> - Scenic hilltop & nature beauty</li>
+      <li><i class="fas fa-mountain"></i> <strong>Trikut Pahad</strong> - Ancient temple & ropeway views</li>
+      <li><i class="fas fa-water"></i> <strong>Tapuban</strong> - Serene waterfall & meditation spot</li>
+      <li><i class="fas fa-pray"></i> <strong>Shivganga Mandir</strong> - Holy pond & spiritual vibe</li>
+    </ul>
+    <p style="font-size: 0.75rem; color: #ffaa66; margin: 0.5rem 0;"><i class="fas fa-clock"></i> Duration: 8-10 hours | Includes AC Vehicle + Driver</p>
+    <a href="booking.html?plan=5places" class="btn-cyber-plan">Book This Package <i class="fas fa-arrow-right"></i></a>
+  </div>
+
+  <!-- Plan 2: 4 Jagah (Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban) -->
+  <div class="plan-card">
+    <div class="plan-icon"><i class="fas fa-hiking"></i></div>
+    <div class="plan-title">Spiritual Circuit</div>
+    <div class="plan-price">🌟 4 Holy Destinations | Half Day+</div>
+    <ul class="destinations-list">
+      <li><i class="fas fa-temple"></i> <strong>Baba Mandir</strong> - Main shrine with aarti experience</li>
+      <li><i class="fas fa-tree"></i> <strong>Nandan Pahad</strong> - Sunrise point & nature walk</li>
+      <li><i class="fas fa-mountain"></i> <strong>Trikut Pahad</strong> - Ancient caves & ropeway</li>
+      <li><i class="fas fa-water"></i> <strong>Tapuban</strong> - Waterfall & meditation retreat</li>
+    </ul>
+    <p style="font-size: 0.75rem; color: #ffaa66;"><i class="fas fa-clock"></i> Duration: 6-7 hours | Perfect spiritual getaway</p>
+    <a href="booking.html?plan=4places" class="btn-cyber-plan">Book Now</a>
+  </div>
+
+  <!-- Plan 3: Only Baba Mandir (1 Jagah) -->
+  <div class="plan-card">
+    <div class="plan-icon"><i class="fas fa-om"></i></div>
+    <div class="plan-title">Baba Mandir Darshan</div>
+    <div class="plan-price">🕉️ Single Destination | Half Day</div>
+    <ul class="destinations-list">
+      <li><i class="fas fa-temple"></i> <strong>Baba Mandir</strong> - Complete darshan & puja experience</li>
+      <li><i class="fas fa-parking"></i> Hassle-free pickup & drop</li>
+      <li><i class="fas fa-coffee"></i> Complimentary prasadam & water</li>
+    </ul>
+    <p style="font-size: 0.75rem; color: #ffaa66;"><i class="fas fa-clock"></i> Duration: 3-4 hours | Perfect for focused blessings</p>
+    <a href="booking.html?plan=babaonly" class="btn-cyber-plan">Book Darshan</a>
+  </div>
+
+  <!-- Plan 4: Customize (Fully Custom Tour) -->
+  <div class="plan-card custom-plan">
+    <div class="plan-icon"><i class="fas fa-sliders-h"></i></div>
+    <div class="plan-title">✨ Custom Tour Creator</div>
+    <div class="plan-price">🎯 Build Your Own Journey</div>
+    <p style="font-size: 0.8rem; margin-bottom: 1rem;">Tell us exactly which places you want to visit. We'll craft the perfect itinerary.</p>
+    <form id="customPlanForm">
+      <div class="custom-input-group">
+        <label><i class="fas fa-map-pin"></i> Destinations (Enter place names separated by commas)</label>
+        <input type="text" id="destinations" placeholder="e.g., Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban, Shivganga, etc.">
+      </div>
+      <div class="custom-input-group">
+        <label><i class="fas fa-calendar-alt"></i> Preferred Date</label>
+        <input type="date" id="tourDate">
+      </div>
+      <div class="custom-input-group">
+        <label><i class="fas fa-comment"></i> Special Requests / Additional Places</label>
+        <textarea rows="2" id="specialReq" placeholder="Any specific temple, viewpoint or extra spots..."></textarea>
+      </div>
+      <button type="button" id="submitCustomBtn" class="btn-cyber-plan btn-custom"><i class="fas fa-magic"></i> Request Custom Quote</button>
+    </form>
+    <div id="customMessage" style="margin-top: 1rem; font-size: 0.8rem; color: #e67e22; text-align: center;"></div>
+  </div>
+</div>
+
+<!-- Info Section About Places -->
+<div class="info-section">
+  <div class="info-card">
+    <h3><i class="fas fa-info-circle"></i> About the Sacred Destinations</h3>
+    <div class="places-grid">
+      <div class="place-item">
+        <strong>🏯 Baba Mandir</strong><br>
+        Renowned hilltop temple with divine energy, panoramic views of the valley, and spiritual ambiance. Perfect for morning aarti.
+      </div>
+      <div class="place-item">
+        <strong>🌄 Nandan Pahad</strong><br>
+        Lush green hill station, famous for sunrise/sunset views, nature photography, and peaceful walking trails.
+      </div>
+      <div class="place-item">
+        <strong>⛰️ Trikut Pahad</strong><br>
+        Ancient pilgrimage site with ropeway, sacred caves, and breathtaking 360-degree mountain vistas.
+      </div>
+      <div class="place-item">
+        <strong>💧 Tapuban</strong><br>
+        Natural waterfall and meditation retreat. Serene environment with natural pools and forest surroundings.
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer-cyber">
+  <p>SR SUBHASH CAR RENTAL SERVICE — Your Trusted Pilgrimage Partner</p>
+  <p style="font-size:0.7rem; margin-top:0.5rem;">© 2025 | Custom Tours Available 24/7 | Safe & Comfortable Journey</p>
+</footer>
+
+<script>
+  // Custom plan handler
+  const submitBtn = document.getElementById('submitCustomBtn');
+  const msgDiv = document.getElementById('customMessage');
+  
+  submitBtn.addEventListener('click', () => {
+    const destinations = document.getElementById('destinations').value.trim();
+    const tourDate = document.getElementById('tourDate').value;
+    const specialReq = document.getElementById('specialReq').value.trim();
+    
+    if (!destinations) {
+      msgDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter at least one destination!';
+      msgDiv.style.color = "#ff8866";
+      setTimeout(() => { msgDiv.innerHTML = ''; }, 3000);
+      return;
+    }
+    
+    // Store custom plan in localStorage to pass to booking page
+    const customPlanData = {
+      destinations: destinations,
+      date: tourDate || "Flexible Date",
+      special: specialReq || "No special requests",
+      type: "custom"
+    };
+    localStorage.setItem('customTourData', JSON.stringify(customPlanData));
+    
+    msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> Great! Redirecting to booking with your custom places...';
+    msgDiv.style.color = "#e67e22";
+    setTimeout(() => {
+      window.location.href = "booking.html?custom=true";
+    }, 1200);
+  });
+  
+  // Handle URL params for pre-selected plans
+  const urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.get('prefill') === 'custom') {
+    // optional prefill logic
+  }
+</script>
+</body>
+</html>
