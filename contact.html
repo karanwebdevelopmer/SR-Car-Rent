@@ -37,6 +37,7 @@
     window.ref = ref;
     window.push = push;
     window.set = set;
+    console.log("Firebase initialized successfully");
   </script>
   <style>
     * {
@@ -155,7 +156,7 @@
       background: rgba(244, 67, 54, 0.9);
       border-color: #f44336;
       color: white;
-      animation: slideInDown 0.5s ease-out, shake 0.5s ease-in-out 0.5s;
+      animation: slideInDown 0.5s ease-out;
     }
 
     .toast-notification .icon {
@@ -181,17 +182,6 @@
       opacity: 1;
     }
 
-    @keyframes slideInRight {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
     @keyframes slideInDown {
       from {
         transform: translateY(-100%);
@@ -203,17 +193,6 @@
       }
     }
 
-    @keyframes slideOutRight {
-      from {
-        transform: translateX(0);
-        opacity: 1;
-      }
-      to {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-    }
-
     @keyframes slideOutUp {
       from {
         transform: translateY(0);
@@ -222,46 +201,6 @@
       to {
         transform: translateY(-100%);
         opacity: 0;
-      }
-    }
-
-    /* Glowing Star Particles */
-    .star-particle {
-      position: absolute;
-      pointer-events: none;
-      z-index: 1;
-      animation: twinkle 4s ease-in-out infinite;
-    }
-
-    .star-particle::before {
-      content: '·';
-      font-size: 2rem;
-      color: #ffffff;
-      text-shadow:
-        0 0 5px #ffffff,
-        0 0 10px #e67e22,
-        0 0 15px #ff6b35,
-        0 0 20px #ff4500;
-      animation: glow 3s ease-in-out infinite alternate;
-    }
-
-    @keyframes twinkle {
-      0%, 100% {
-        opacity: 0;
-        transform: scale(0.5) translateY(0px);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1) translateY(-20px);
-      }
-    }
-
-    @keyframes glow {
-      0% {
-        filter: brightness(1) blur(0px);
-      }
-      100% {
-        filter: brightness(1.5) blur(1px);
       }
     }
 
@@ -576,6 +515,11 @@
       transform: translateY(-2px);
       box-shadow: 0 0 25px rgba(230,126,34,0.5);
     }
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
 
     /* Map Section */
     .map-section {
@@ -643,13 +587,6 @@
       .contact-form {
         padding: 1.5rem;
       }
-      .form-group {
-        margin-bottom: 1rem;
-      }
-      .btn-submit {
-        width: 100%;
-        padding: 1rem;
-      }
       .floating-buttons {
         bottom: 20px;
         right: 20px;
@@ -685,11 +622,6 @@
 </head>
 <body>
 <div class="cyber-bg"></div>
-
-<!-- Fire Sprinkle Container -->
-<div id="fireSprinkles"></div>
-
-<!-- Toast Notifications Container -->
 <div id="toastContainer"></div>
 
 <!-- Floating Action Buttons for Direct Call & WhatsApp -->
@@ -744,7 +676,6 @@
         </div>
       </div>
       
-      
       <div class="info-item">
         <div class="info-icon"><i class="fab fa-whatsapp"></i></div>
         <div class="info-detail">
@@ -767,10 +698,12 @@
     <div class="info-title" style="font-size:1.2rem; margin-top:1rem;"><i class="fas fa-clock"></i> Business Hours</div>
     <div class="hours-card">
       <div class="hours-item">
-    
-      <div class="hours-item">
-        <span class="hours-day">Support </span>
+        <span class="hours-day">Monday - Sunday</span>
         <span class="hours-time">24/7 Available</span>
+      </div>
+      <div class="hours-item">
+        <span class="hours-day">Support Helpline</span>
+        <span class="hours-time">Always Open</span>
       </div>
     </div>
     
@@ -784,7 +717,7 @@
     </div>
   </div>
   
-  <!-- Contact Form Section -->
+  <!-- Contact Form Section - Email Removed -->
   <div class="contact-form">
     <div class="form-title"><i class="fas fa-paper-plane"></i> Send Us a Message</div>
     <form id="contactForm">
@@ -795,7 +728,7 @@
         </div>
         <div class="input-group">
           <label><i class="fas fa-phone"></i> Phone Number *</label>
-          <input type="tel" id="contactPhone" required placeholder="Enter Mobile Number" minlength="10" maxlength="10">
+          <input type="tel" id="contactPhone" required placeholder="10-digit mobile number">
         </div>
       </div>
 
@@ -815,7 +748,7 @@
       </div>
       <button type="submit" class="btn-submit" id="sendMessageBtn"><i class="fas fa-paper-plane"></i> Send Message</button>
     </form>
-    <div id="formMessage" style="margin-top: 1rem; font-size: 0.8rem; text-align: center; color: #e67e22;"></div>
+    <div id="formMessage" style="margin-top: 1rem; font-size: 0.8rem; text-align: center;"></div>
   </div>
 </div>
 
@@ -850,191 +783,148 @@
 </footer>
 
 <script>
-  const sendBtn = document.getElementById('sendMessageBtn');
-  const contactForm = document.getElementById('contactForm');
-  const formMessageDiv = document.getElementById('formMessage');
-  const toastContainer = document.getElementById('toastContainer');
-  const fireSprinkles = document.getElementById('fireSprinkles');
-  
-  // Initialize star particles
-  // initStarParticles();
-  
-  contactForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    // Get form values
-    const name = document.getElementById('contactName').value.trim();
-    const phone = document.getElementById('contactPhone').value.trim();
-    const email = document.getElementById('contactEmail').value.trim();
-    const subject = document.getElementById('contactSubject').value;
-    const message = document.getElementById('contactMessage').value.trim();
+  (function() {
+    const sendBtn = document.getElementById('sendMessageBtn');
+    const contactForm = document.getElementById('contactForm');
+    const toastContainer = document.getElementById('toastContainer');
     
-    // Validation
-    if (!name) {
-      showToast('Please enter your full name', 'error');
-      return;
-    }
-    if (!phone) {
-      showToast('Please enter your phone number', 'error');
-      return;
-    }
-    const phoneOnly = phone.replace(/\D/g, '');
-    if (!/^\d{10}$/.test(phoneOnly)) {
-      showToast('Please enter a valid 10-digit phone number', 'error');
-      return;
-    }
-    if (!email) {
-      showToast('Please enter your email address', 'error');
-      return;
-    }
-    if (!email.includes('@') || !email.includes('.')) {
-      showToast('Please enter a valid email address', 'error');
-      return;
-    }
-    if (!message) {
-      showToast('Please enter your message', 'error');
-      return;
+    // Show toast notification
+    function showToast(message, type) {
+      const toast = document.createElement('div');
+      toast.className = `toast-notification ${type}`;
+      const icon = type === 'success' ? '✅' : '❌';
+      const title = type === 'success' ? 'Success!' : 'Error!';
+      toast.innerHTML = `
+        <span class="icon">${icon}</span>
+        <div class="message">
+          <strong>${title}</strong><br>${message}
+        </div>
+        <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+      `;
+      toastContainer.appendChild(toast);
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.style.animation = 'slideOutUp 0.5s ease-in';
+          setTimeout(() => toast.remove(), 500);
+        }
+      }, 5000);
     }
     
-    // Get subject text
-    const subjectText = {
-      'booking': 'Booking Inquiry',
-      'custom': 'Custom Tour Request',
-      'support': 'Support / Help',
-      'feedback': 'Feedback / Suggestion',
-      'other': 'Other'
-    }[subject];
+    // Function to save contact to Firebase
+    async function saveContactToFirebase(contactData) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          if (window.database && window.ref && window.set) {
+            const contactsRef = window.ref(window.database, `contacts/${contactData.messageId}`);
+            await window.set(contactsRef, contactData);
+            console.log('Firebase save success');
+            resolve(true);
+          } else {
+            reject(new Error('Firebase not ready'));
+          }
+        } catch (err) {
+          console.error('Firebase write error:', err);
+          reject(err);
+        }
+      });
+    }
     
-    // Store message in Firebase
-    const contactData = {
-      name: name,
-      phone: phone,
-      email: email,
-      subject: subjectText,
-      message: message,
-      date: new Date().toLocaleString(),
-      messageId: 'MSG' + Date.now() + Math.random().toString(36).substr(2, 5),
-      timestamp: Date.now()
-    };
-    
-    try {
-      // Store in Firebase using messageId key (ensures unique reference for admin)
-      const contactsRef = window.ref(window.database, `contacts/${contactData.messageId}`);
-      await window.set(contactsRef, contactData);
+    // Handle form submission
+    contactForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
       
-      // Also keep in localStorage for backward compatibility
-      const allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
-      allContacts.push(contactData);
-      localStorage.setItem('allContacts', JSON.stringify(allContacts));
+      // Get form values
+      const name = document.getElementById('contactName').value.trim();
+      const phone = document.getElementById('contactPhone').value.trim();
+      const subject = document.getElementById('contactSubject').value;
+      const message = document.getElementById('contactMessage').value.trim();
       
-      showToast(`Message Sent Successfully! Reference ID: ${contactData.messageId}`, 'success');
-    } catch (error) {
-      console.error('Error saving to Firebase:', error);
-      // Fallback to localStorage only
-      const allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
-      allContacts.push(contactData);
-      localStorage.setItem('allContacts', JSON.stringify(allContacts));
-      localStorage.setItem('lastContactMessage', JSON.stringify(contactData));
+      // Validation
+      if (!name) { showToast('Please enter your full name', 'error'); return; }
+      if (!phone) { showToast('Please enter your phone number', 'error'); return; }
+      const phoneDigits = phone.replace(/\D/g, '');
+      if (!/^\d{10}$/.test(phoneDigits)) { showToast('Please enter a valid 10-digit phone number', 'error'); return; }
+      if (!message) { showToast('Please enter your message', 'error'); return; }
       
-      showToast(`Message Sent Successfully! Reference ID: ${contactData.messageId}`, 'success');
-    }
-    
-    // Clear form
-    document.getElementById('contactForm').reset();
-    
-    // Optional: In a real scenario, you would send this to a backend API
-    console.log('Contact Form Data:', contactData);
-  });
-  
-  function showError(message) {
-    formMessageDiv.innerHTML = message;
-    formMessageDiv.style.color = '#ff4444';
-    formMessageDiv.style.background = 'rgba(255, 68, 68, 0.2)';
-    formMessageDiv.style.padding = '1rem';
-    formMessageDiv.style.borderRadius = '1rem';
-    formMessageDiv.style.border = '2px solid #ff4444';
-    formMessageDiv.style.fontSize = '1rem';
-    formMessageDiv.style.fontWeight = 'bold';
-    formMessageDiv.style.textAlign = 'center';
-    formMessageDiv.style.boxShadow = '0 0 20px rgba(255, 68, 68, 0.3)';
-    
-    // Shake animation for error
-    formMessageDiv.style.animation = 'shake 0.5s ease-in-out';
-    
-    setTimeout(() => {
-      formMessageDiv.innerHTML = '';
-      formMessageDiv.style.padding = '0';
-      formMessageDiv.style.background = 'transparent';
-      formMessageDiv.style.border = 'none';
-      formMessageDiv.style.boxShadow = 'none';
-      formMessageDiv.style.animation = 'none';
-    }, 4000);
-  }
-  
-  function showMessage(msg, type) {
-    formMessageDiv.innerHTML = msg.replace(/\n/g, '<br>');
-    formMessageDiv.style.color = type === 'error' ? '#ff8866' : '#e67e22';
-    formMessageDiv.style.background = type === 'error' ? 'rgba(255,68,68,0.1)' : 'rgba(230,126,34,0.1)';
-    formMessageDiv.style.padding = '0.8rem';
-    formMessageDiv.style.borderRadius = '1rem';
-    formMessageDiv.style.border = `1px solid ${type === 'error' ? '#ff8866' : '#e67e22'}`;
-    
-    setTimeout(() => {
-      formMessageDiv.innerHTML = '';
-      formMessageDiv.style.padding = '0';
-      formMessageDiv.style.background = 'transparent';
-      formMessageDiv.style.border = 'none';
-    }, 5000);
-  }
-  
-  function showToast(message, type) {
-    const toast = document.createElement('div');
-    toast.className = `toast-notification ${type}`;
-    
-    const icon = type === 'success' ? '✅' : '❌';
-    const title = type === 'success' ? 'Success!' : 'Failed!';
-    
-    toast.innerHTML = `
-      <span class="icon">${icon}</span>
-      <div class="message">
-        <strong>${title}</strong><br>
-        ${message}
-      </div>
-      <button class="close-btn" onclick="this.parentElement.remove()">×</button>
-    `;
-    
-    toastContainer.appendChild(toast);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-      if (toast.parentElement) {
-        toast.style.animation = 'slideOutUp 0.5s ease-in';
-        setTimeout(() => toast.remove(), 500);
+      // Subject text mapping
+      const subjectText = {
+        'booking': 'Booking Inquiry',
+        'custom': 'Custom Tour Request',
+        'support': 'Support / Help',
+        'feedback': 'Feedback / Suggestion',
+        'other': 'Other'
+      }[subject];
+      
+      // Create unique message ID
+      const messageId = 'MSG' + Date.now() + Math.random().toString(36).substr(2, 6).toUpperCase();
+      
+      // Prepare contact data (email removed)
+      const contactData = {
+        messageId: messageId,
+        name: name,
+        phone: phoneDigits,
+        subject: subjectText,
+        message: message,
+        timestamp: Date.now(),
+        dateTime: new Date().toLocaleString(),
+        status: "Pending"
+      };
+      
+      // Disable button and show loading
+      const originalText = sendBtn.innerHTML;
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Sending...';
+      sendBtn.disabled = true;
+      
+      try {
+        // Save to Firebase
+        await saveContactToFirebase(contactData);
+        
+        // Also save to localStorage for backup
+        let allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
+        allContacts.push(contactData);
+        localStorage.setItem('allContacts', JSON.stringify(allContacts));
+        
+        showToast(`Message Sent! Reference ID: ${messageId}. We'll respond within 24 hours.`, 'success');
+        
+        // Clear form
+        document.getElementById('contactName').value = '';
+        document.getElementById('contactPhone').value = '';
+        document.getElementById('contactSubject').value = 'booking';
+        document.getElementById('contactMessage').value = '';
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+      } catch (error) {
+        console.error('Save error, using localStorage fallback:', error);
+        // Fallback to localStorage only
+        let allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
+        allContacts.push(contactData);
+        localStorage.setItem('allContacts', JSON.stringify(allContacts));
+        
+        showToast(`Message Saved! Reference ID: ${messageId}. Our team will contact you soon.`, 'success');
+        
+        // Clear form
+        document.getElementById('contactName').value = '';
+        document.getElementById('contactPhone').value = '';
+        document.getElementById('contactSubject').value = 'booking';
+        document.getElementById('contactMessage').value = '';
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } finally {
+        sendBtn.innerHTML = originalText;
+        sendBtn.disabled = false;
       }
-    }, 5000);
-  }
-  
-  function initStarParticles() {
-    const container = document.body;
-    const particleCount = 50;
-
-    for (let i = 0; i < particleCount; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'star-particle';
-      particle.style.left = Math.random() * 100 + '%';
-      particle.style.top = Math.random() * 100 + '%';
-      particle.style.animationDelay = Math.random() * 4 + 's';
-      container.appendChild(particle);
+    });
+    
+    // URL params handler
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryType = urlParams.get('type');
+    if (queryType === 'booking') {
+      document.getElementById('contactSubject').value = 'booking';
+    } else if (queryType === 'support') {
+      document.getElementById('contactSubject').value = 'support';
     }
-  }
-  
-  // Pre-fill from URL if needed
-  const urlParams = new URLSearchParams(window.location.search);
-  const queryType = urlParams.get('type');
-  if (queryType === 'booking') {
-    document.getElementById('contactSubject').value = 'booking';
-  } else if (queryType === 'support') {
-    document.getElementById('contactSubject').value = 'support';
-  }
+  })();
 </script>
 </body>
 </html>
