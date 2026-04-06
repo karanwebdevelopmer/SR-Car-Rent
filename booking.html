@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -37,7 +37,6 @@
     window.ref = ref;
     window.push = push;
     window.set = set;
-    console.log("Firebase initialized successfully");
   </script>
   <style>
     * {
@@ -246,11 +245,6 @@
       transform: translateY(-2px);
       box-shadow: 0 0 25px rgba(230,126,34,0.5);
     }
-    .btn-submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
 
     /* Summary Section */
     .booking-summary {
@@ -425,7 +419,7 @@
       background: rgba(244, 67, 54, 0.9);
       border-color: #f44336;
       color: white;
-      animation: slideInDown 0.5s ease-out;
+      animation: slideInDown 0.5s ease-out, shake 0.5s ease-in-out 0.5s;
     }
 
     .toast-notification .icon {
@@ -451,6 +445,17 @@
       opacity: 1;
     }
 
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
     @keyframes slideInDown {
       from {
         transform: translateY(-100%);
@@ -472,10 +477,66 @@
         opacity: 0;
       }
     }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    /* Glowing Star Particles */
+    .star-particle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+
+    .star-particle::before {
+      content: '·';
+      font-size: 2rem;
+      color: #ffffff;
+      text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #e67e22,
+        0 0 15px #ff6b35,
+        0 0 20px #ff4500;
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(0px);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1) translateY(-20px);
+      }
+    }
+
+    @keyframes glow {
+      0% {
+        filter: brightness(1) blur(0px);
+      }
+      100% {
+        filter: brightness(1.5) blur(1px);
+      }
+    }
   </style>
 </head>
 <body>
 <div class="cyber-bg"></div>
+
+<!-- Fire Sprinkle Container -->
+<div id="fireSprinkles"></div>
+
+<!-- Toast Notifications Container -->
 <div id="toastContainer"></div>
 
 <nav class="navbar">
@@ -509,9 +570,10 @@
         </div>
         <div class="input-group">
           <label><i class="fas fa-phone"></i> Phone Number *</label>
-          <input type="tel" id="phone" required placeholder="10-digit mobile number">
+          <input type="tel" id="phone" required placeholder="Enter your phone number">
         </div>
       </div>
+    
       <div class="row-2col">
         <div class="input-group">
           <label><i class="fas fa-calendar-day"></i> Pickup Date *</label>
@@ -558,23 +620,23 @@
     
     <div class="form-title" style="font-size:1.2rem; margin-top:1rem;"><i class="fas fa-car"></i> Select Vehicle</div>
     <div id="vehicleOptions">
-      <div class="vehicle-option selected" data-vehicle="sedan" data-price="3000">
+      <div class="vehicle-option selected" data-vehicle="sedan">
         <div style="flex:1">
           <div class="vehicle-name"><i class="fas fa-car"></i> Luxury Sedan</div>
           <div style="font-size:0.75rem; color:#aaa;">Honda City / Similar | 4 Seater | AC | Professional Driver</div>
         </div>
-        <div class="vehicle-price">₹3,000/day</div>
+        <div class="vehicle-price">Included in Plan</div>
       </div>
     </div>
 
     <div class="price-breakdown">
       <div class="price-row">
-        <span>Vehicle Rent (per day)</span>
-        <span id="vehiclePriceDisplay">₹3,000</span>
+        <span>Plan Price</span>
+        <span id="vehiclePriceDisplay">₹6,999</span>
       </div>
       <div class="price-row">
         <span>Driver Charges</span>
-        <span>₹1,000</span>
+        <span>₹500</span>
       </div>
       <div class="price-row">
         <span>Fuel & Taxes</span>
@@ -584,7 +646,7 @@
         <span>Total Amount</span>
         <span id="totalAmount">₹4,000</span>
       </div>
-      <p style="font-size:0.7rem; color:#ffaa66; margin-top:0.5rem; text-align:center;"><i class="fas fa-info-circle"></i> Prices are indicative, final pricing confirmed upon booking.</p>
+      <p style="font-size:0.7rem; color:#ffaa66; margin-top:0.5rem; text-align:center;"><i class="fas fa-info-circle"></i> Prices are indicative and may vary based on actual locations and duration. Final pricing will be confirmed upon booking.</p>
       <p style="font-size:0.7rem; color:#aaa; margin-top:0.5rem;"><i class="fas fa-shield-alt"></i> 100% Secure Booking | No Hidden Charges | Professional Drivers</p>
     </div>
   </div>
@@ -596,257 +658,334 @@
 </footer>
 
 <script>
-  (function() {
-    // DOM elements
-    const tourPlanSelect = document.getElementById('tourPlan');
-    const customPlacesGroup = document.getElementById('customPlacesGroup');
-    const customPlacesInput = document.getElementById('customPlaces');
-    const selectedPlanNameSpan = document.getElementById('selectedPlanName');
-    const customDestSummarySpan = document.getElementById('customDestSummary');
-    const vehicleOptions = document.querySelectorAll('.vehicle-option');
-    const vehiclePriceDisplay = document.getElementById('vehiclePriceDisplay');
-    const totalAmountSpan = document.getElementById('totalAmount');
-    const confirmBtn = document.getElementById('confirmBookingBtn');
-    const toastContainer = document.getElementById('toastContainer');
+  // Get DOM elements
+  const tourPlanSelect = document.getElementById('tourPlan');
+  const customPlacesGroup = document.getElementById('customPlacesGroup');
+  const customPlacesInput = document.getElementById('customPlaces');
+  const selectedPlanNameSpan = document.getElementById('selectedPlanName');
+  const customDestSummarySpan = document.getElementById('customDestSummary');
+  const vehicleOptions = document.querySelectorAll('.vehicle-option');
+  const vehiclePriceDisplay = document.getElementById('vehiclePriceDisplay');
+  const totalAmountSpan = document.getElementById('totalAmount');
+  const confirmBtn = document.getElementById('confirmBookingBtn');
+  const bookingMessageDiv = document.getElementById('bookingMessage');
+  const toastContainer = document.getElementById('toastContainer');
+  const fireSprinkles = document.getElementById('fireSprinkles');
+  
+  // Initialize fire sprinkles
+  // initStarParticles();
+  
+  let selectedVehiclePrice = 3000;
+  let selectedVehicleName = "Luxury Sedan";
+  
+  // Plan prices mapping (base price from plans page)
+  const planPrices = {
+    '5places': 6999,
+    '4places': 3999,
+    'babaonly': 2999,
+    'custom': 6999 // Default to highest for custom
+  };
+  
+  // Plan names mapping
+  const planNames = {
+    '5places': 'Divine Explorer - 5 Places (Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban, Shivganga)',
+    '4places': 'Spiritual Circuit - 4 Places (Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban)',
+    'babaonly': 'Baba Mandir Darshan - 1 Place',
+    'custom': 'Custom Tour (Build Your Own)'
+  };
+  
+  // Handle tour plan change
+  tourPlanSelect.addEventListener('change', function() {
+    const selectedValue = this.value;
+    selectedPlanNameSpan.textContent = planNames[selectedValue] || planNames['5places'];
     
-    let selectedVehiclePrice = 3000;
-    let selectedVehicleName = "Luxury Sedan";
+    // Update pricing based on selected plan
+    selectedVehiclePrice = planPrices[selectedValue] || planPrices['5places'];
+    vehiclePriceDisplay.textContent = `₹${selectedVehiclePrice.toLocaleString()}`;
+    updateTotal();
     
-    const planNames = {
-      '5places': 'Divine Explorer - 5 Places (Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban, Shivganga)',
-      '4places': 'Spiritual Circuit - 4 Places (Baba Mandir, Nandan Pahad, Trikut Pahad, Tapuban)',
-      'babaonly': 'Baba Mandir Darshan - 1 Place',
-      'custom': 'Custom Tour (Build Your Own)'
-    };
-    
-    // Show/hide custom field
-    tourPlanSelect.addEventListener('change', function() {
-      const val = this.value;
-      selectedPlanNameSpan.textContent = planNames[val] || planNames['5places'];
-      if (val === 'custom') {
-        customPlacesGroup.style.display = 'block';
-        customDestSummarySpan.textContent = customPlacesInput.value.trim() || 'Not specified yet';
+    if (selectedValue === 'custom') {
+      customPlacesGroup.style.display = 'block';
+      if (customPlacesInput.value.trim()) {
+        customDestSummarySpan.textContent = customPlacesInput.value;
       } else {
-        customPlacesGroup.style.display = 'none';
-        customDestSummarySpan.textContent = '-';
+        customDestSummarySpan.textContent = 'Not specified yet';
       }
-    });
-    
-    customPlacesInput.addEventListener('input', function() {
-      if (tourPlanSelect.value === 'custom') {
-        customDestSummarySpan.textContent = this.value.trim() || 'Not specified yet';
-      }
-    });
-    
-    // Vehicle selection (only one)
-    vehicleOptions.forEach(opt => {
-      opt.addEventListener('click', function() {
-        vehicleOptions.forEach(o => o.classList.remove('selected'));
-        this.classList.add('selected');
-        selectedVehiclePrice = parseInt(this.dataset.price);
-        selectedVehicleName = this.querySelector('.vehicle-name').innerText.trim();
-        vehiclePriceDisplay.textContent = `₹${selectedVehiclePrice.toLocaleString()}`;
-        updateTotal();
-      });
-    });
-    
-    function updateTotal() {
-      const total = selectedVehiclePrice + 1000;
-      totalAmountSpan.textContent = `₹${total.toLocaleString()}`;
-    }
-    
-    // Toast notification
-    function showToast(message, type) {
-      const toast = document.createElement('div');
-      toast.className = `toast-notification ${type}`;
-      const icon = type === 'success' ? '✅' : '❌';
-      const title = type === 'success' ? 'Booking Confirmed!' : 'Booking Failed';
-      toast.innerHTML = `
-        <span class="icon">${icon}</span>
-        <div class="message">
-          <strong>${title}</strong><br>${message}
-        </div>
-        <button class="close-btn" onclick="this.parentElement.remove()">×</button>
-      `;
-      toastContainer.appendChild(toast);
-      setTimeout(() => {
-        if (toast.parentElement) {
-          toast.style.animation = 'slideOutUp 0.5s ease-in';
-          setTimeout(() => toast.remove(), 500);
-        }
-      }, 5000);
-    }
-    
-    function clearFormFields() {
-      document.getElementById('fullName').value = '';
-      document.getElementById('phone').value = '';
-      document.getElementById('pickupDate').value = '';
-      document.getElementById('pickupTime').value = '';
-      document.getElementById('pickupLocation').value = '';
-      document.getElementById('specialRequest').value = '';
-      customPlacesInput.value = '';
-      tourPlanSelect.value = '5places';
-      selectedPlanNameSpan.textContent = planNames['5places'];
+    } else {
       customPlacesGroup.style.display = 'none';
       customDestSummarySpan.textContent = '-';
-      // Reset vehicle selection to default
-      vehicleOptions.forEach(opt => opt.classList.add('selected'));
-      selectedVehiclePrice = 3000;
-      selectedVehicleName = "Luxury Sedan";
-      vehiclePriceDisplay.textContent = '₹3,000';
+    }
+    
+    // Load custom data from localStorage if coming from plans page
+    loadCustomFromStorage();
+  });
+  
+  // Handle custom places input
+  customPlacesInput.addEventListener('input', function() {
+    if (this.value.trim()) {
+      customDestSummarySpan.textContent = this.value;
+    } else {
+      customDestSummarySpan.textContent = 'Not specified yet';
+    }
+  });
+  
+  // Vehicle selection (only one option now)
+  vehicleOptions.forEach(option => {
+    option.addEventListener('click', function() {
+      // Since there's only one option, just ensure it's selected
+      this.classList.add('selected');
+      selectedVehicleName = this.querySelector('.vehicle-name').innerText;
+      // Note: Price is now determined by selected plan, not vehicle
       updateTotal();
-    }
-    
-    // Function to save booking to Firebase + localStorage
-    async function saveBookingToFirebase(bookingData) {
-      return new Promise(async (resolve, reject) => {
-        try {
-          if (window.database && window.ref && window.push && window.set) {
-            const bookingsRef = window.ref(window.database, 'bookings');
-            const newBookingRef = window.push(bookingsRef);
-            await window.set(newBookingRef, bookingData);
-            console.log('Firebase save success');
-            resolve(true);
-          } else {
-            console.warn('Firebase not fully loaded, saving to localStorage only');
-            reject(new Error('Firebase not ready'));
-          }
-        } catch (err) {
-          console.error('Firebase write error:', err);
-          reject(err);
-        }
-      });
-    }
-    
-    // MAIN BOOKING CONFIRMATION HANDLER
-    confirmBtn.addEventListener('click', async function(e) {
-      e.preventDefault();
-      
-      // Get all values (email removed)
-      const fullName = document.getElementById('fullName').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const pickupDate = document.getElementById('pickupDate').value;
-      const pickupTime = document.getElementById('pickupTime').value;
-      const pickupLocation = document.getElementById('pickupLocation').value.trim();
-      const specialRequest = document.getElementById('specialRequest').value.trim() || 'None';
-      const tourPlanVal = tourPlanSelect.value;
-      
-      // Validation (email validation removed)
-      if (!fullName) { showToast('Please enter your full name', 'error'); return; }
-      if (!phone) { showToast('Please enter phone number', 'error'); return; }
-      const phoneDigits = phone.replace(/\D/g, '');
-      if (!/^\d{10}$/.test(phoneDigits)) { showToast('Please enter a valid 10-digit phone number', 'error'); return; }
-      if (!pickupDate) { showToast('Please select pickup date', 'error'); return; }
-      if (!pickupTime) { showToast('Please select pickup time', 'error'); return; }
-      if (!pickupLocation) { showToast('Please enter pickup location', 'error'); return; }
-      
-      // Prepare destinations text
-      let destinationsText = '';
-      if (tourPlanVal === 'custom') {
-        const customVal = customPlacesInput.value.trim();
-        if (!customVal) {
-          showToast('Please specify custom destinations or select a package', 'error');
-          return;
-        }
-        destinationsText = customVal;
-      } else {
-        destinationsText = planNames[tourPlanVal];
-      }
-      
-      // Build booking object (email removed)
-      const bookingId = 'SR' + Date.now() + Math.random().toString(36).substr(2, 6).toUpperCase();
-      const bookingData = {
-        bookingId: bookingId,
-        name: fullName,
-        phone: phoneDigits,
-        pickupDate: pickupDate,
-        pickupTime: pickupTime,
-        pickupLocation: pickupLocation,
-        tourPlan: destinationsText,
-        vehicle: selectedVehicleName,
-        vehiclePrice: selectedVehiclePrice,
-        driverCharges: 1000,
-        totalAmount: selectedVehiclePrice + 1000,
-        specialRequest: specialRequest,
-        bookingTimestamp: new Date().toISOString(),
-        status: "Confirmed"
-      };
-      
-      // Show loading state
-      const originalBtnText = confirmBtn.innerHTML;
-      confirmBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Confirming...';
-      confirmBtn.disabled = true;
-      
-      try {
-        // Save to Firebase
-        await saveBookingToFirebase(bookingData);
-        
-        // Also save to localStorage for backup/admin
-        let allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
-        allBookings.push(bookingData);
-        localStorage.setItem('allBookings', JSON.stringify(allBookings));
-        localStorage.setItem('currentBooking', JSON.stringify(bookingData));
-        
-        showToast(`Booking Confirmed! ID: ${bookingId}. We'll contact you shortly.`, 'success');
-        clearFormFields();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-      } catch (firebaseError) {
-        console.error('Firebase save error, saving to localStorage', firebaseError);
-        // Fallback: save to localStorage only
-        let allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
-        allBookings.push(bookingData);
-        localStorage.setItem('allBookings', JSON.stringify(allBookings));
-        localStorage.setItem('currentBooking', JSON.stringify(bookingData));
-        showToast(`Booking saved! ID: ${bookingId}. Our team will reach you soon.`, 'success');
-        clearFormFields();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } finally {
-        confirmBtn.innerHTML = originalBtnText;
-        confirmBtn.disabled = false;
-      }
     });
+  });
+  
+  // Select the only vehicle by default
+  if(vehicleOptions.length > 0) {
+    vehicleOptions[0].classList.add('selected');
+    selectedVehiclePrice = planPrices['5places']; // Default to 5 places plan
+    vehiclePriceDisplay.textContent = '₹6,999';
+  }
+  
+  function updateTotal() {
+    const driverCharge = 500;
+    const total = selectedVehiclePrice + driverCharge;
+    totalAmountSpan.textContent = `₹${total.toLocaleString()}`;
+  }
+  
+  function showBookingError(message) {
+    bookingMessageDiv.innerHTML = message;
+    bookingMessageDiv.style.color = '#ff4444';
+    bookingMessageDiv.style.background = 'rgba(255, 68, 68, 0.2)';
+    bookingMessageDiv.style.padding = '1rem';
+    bookingMessageDiv.style.borderRadius = '1rem';
+    bookingMessageDiv.style.border = '2px solid #ff4444';
+    bookingMessageDiv.style.fontSize = '1rem';
+    bookingMessageDiv.style.fontWeight = 'bold';
+    bookingMessageDiv.style.boxShadow = '0 0 20px rgba(255, 68, 68, 0.3)';
     
-    // URL params loader for plan selection
-    function loadFromUrlParams() {
-      const params = new URLSearchParams(window.location.search);
-      const plan = params.get('plan');
-      if (plan === '5places') { tourPlanSelect.value = '5places'; tourPlanSelect.dispatchEvent(new Event('change')); }
-      else if (plan === '4places') { tourPlanSelect.value = '4places'; tourPlanSelect.dispatchEvent(new Event('change')); }
-      else if (plan === 'babaonly') { tourPlanSelect.value = 'babaonly'; tourPlanSelect.dispatchEvent(new Event('change')); }
-      else if (params.get('custom') === 'true') { tourPlanSelect.value = 'custom'; tourPlanSelect.dispatchEvent(new Event('change')); }
-      
-      // Load custom from localStorage if coming from plans page
-      const customData = localStorage.getItem('customTourData');
-      if (customData) {
-        try {
-          const data = JSON.parse(customData);
-          if (data.destinations && tourPlanSelect.value === 'custom') {
-            customPlacesInput.value = data.destinations;
-            customDestSummarySpan.textContent = data.destinations;
-          }
-          if (data.date) {
-            const dateInput = document.getElementById('pickupDate');
-            if (dateInput && !dateInput.value) dateInput.value = data.date;
-          }
-          if (data.special) {
-            const specialInput = document.getElementById('specialRequest');
-            if (specialInput && !specialInput.value) specialInput.value = data.special;
-          }
-          localStorage.removeItem('customTourData');
-        } catch(e) {}
+    // Shake animation for error
+    bookingMessageDiv.style.animation = 'shake 0.5s ease-in-out';
+    
+    setTimeout(() => {
+      bookingMessageDiv.innerHTML = '';
+      bookingMessageDiv.style.padding = '0';
+      bookingMessageDiv.style.background = 'transparent';
+      bookingMessageDiv.style.border = 'none';
+      bookingMessageDiv.style.boxShadow = 'none';
+      bookingMessageDiv.style.animation = 'none';
+    }, 4000);
+  }
+  
+  function showBookingSuccess(message) {
+    bookingMessageDiv.innerHTML = message;
+    bookingMessageDiv.style.color = '#4CAF50';
+    bookingMessageDiv.style.background = 'rgba(76, 175, 80, 0.2)';
+    bookingMessageDiv.style.padding = '1rem';
+    bookingMessageDiv.style.borderRadius = '1rem';
+    bookingMessageDiv.style.border = '2px solid #4CAF50';
+    bookingMessageDiv.style.fontSize = '1rem';
+    bookingMessageDiv.style.fontWeight = 'bold';
+    bookingMessageDiv.style.boxShadow = '0 0 20px rgba(76, 175, 80, 0.3)';
+    
+    setTimeout(() => {
+      bookingMessageDiv.innerHTML = '';
+      bookingMessageDiv.style.padding = '0';
+      bookingMessageDiv.style.background = 'transparent';
+      bookingMessageDiv.style.border = 'none';
+      bookingMessageDiv.style.boxShadow = 'none';
+    }, 6000);
+  }
+  
+  function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    
+    const icon = type === 'success' ? '✅' : '❌';
+    const title = type === 'success' ? 'Success!' : 'Failed!';
+    
+    toast.innerHTML = `
+      <span class="icon">${icon}</span>
+      <div class="message">
+        <strong>${title}</strong><br>
+        ${message}
+      </div>
+      <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      if (toast.parentElement) {
+        toast.style.animation = 'slideOutUp 0.5s ease-in';
+        setTimeout(() => toast.remove(), 500);
       }
+    }, 5000);
+  }
+  
+  function initStarParticles() {
+    const container = document.body;
+    const particleCount = 50;
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'star-particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 4 + 's';
+      container.appendChild(particle);
+    }
+  }
+  
+  // Load custom tour data from localStorage (from plans page)
+  function loadCustomFromStorage() {
+    const customData = localStorage.getItem('customTourData');
+    if (customData) {
+      const data = JSON.parse(customData);
+      if (data.destinations && tourPlanSelect.value === 'custom') {
+        customPlacesInput.value = data.destinations;
+        customDestSummarySpan.textContent = data.destinations;
+        if (data.date) {
+          const dateInput = document.getElementById('pickupDate');
+          if (dateInput && !dateInput.value) {
+            dateInput.value = data.date;
+          }
+        }
+        if (data.special) {
+          const specialInput = document.getElementById('specialRequest');
+          if (specialInput && !specialInput.value) {
+            specialInput.value = data.special;
+          }
+        }
+      }
+      // Clear after loading to avoid reuse
+      localStorage.removeItem('customTourData');
+    }
+  }
+  
+  // Check URL params for plan selection
+  function loadFromUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const plan = urlParams.get('plan');
+    const customParam = urlParams.get('custom');
+    
+    if (plan === '5places') {
+      tourPlanSelect.value = '5places';
+      tourPlanSelect.dispatchEvent(new Event('change'));
+    } else if (plan === '4places') {
+      tourPlanSelect.value = '4places';
+      tourPlanSelect.dispatchEvent(new Event('change'));
+    } else if (plan === 'babaonly') {
+      tourPlanSelect.value = 'babaonly';
+      tourPlanSelect.dispatchEvent(new Event('change'));
+    } else if (customParam === 'true') {
+      tourPlanSelect.value = 'custom';
+      tourPlanSelect.dispatchEvent(new Event('change'));
+    }
+  }
+  
+  // Handle booking confirmation
+  confirmBtn.addEventListener('click', async function() {
+    // Validate required fields
+    const fullName = document.getElementById('fullName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const pickupDate = document.getElementById('pickupDate').value;
+    const pickupTime = document.getElementById('pickupTime').value;
+    const pickupLocation = document.getElementById('pickupLocation').value.trim();
+    
+    if (!fullName || !phone || !email || !pickupDate || !pickupTime || !pickupLocation) {
+      showToast('Please fill all required fields!', 'error');
+      return;
     }
     
-    // Set min date for pickup to today
-    const today = new Date().toISOString().split('T')[0];
-    const pickupDateInput = document.getElementById('pickupDate');
-    if (pickupDateInput) pickupDateInput.min = today;
+    if (!email.includes('@') || !email.includes('.')) {
+      showToast('Please enter a valid email address!', 'error');
+      return;
+    }
     
-    // Initialize
+    const phoneOnly = phone.replace(/\D/g, '');
+    if (!/^\d{10}$/.test(phoneOnly)) {
+      showToast('Please enter a valid 10-digit phone number!', 'error');
+      return;
+    }
+    
+    // Collect booking data
+    const tourPlan = tourPlanSelect.value;
+    let destinations = '';
+    if (tourPlan === 'custom') {
+      destinations = customPlacesInput.value.trim() || 'Not specified';
+    } else {
+      destinations = planNames[tourPlan];
+    }
+    
+    const bookingData = {
+      name: fullName,
+      phone: phone,
+      email: email,
+      pickupDate: pickupDate,
+      pickupTime: pickupTime,
+      pickupLocation: pickupLocation,
+      tourPlan: destinations,
+      vehicle: selectedVehicleName,
+      planPrice: selectedVehiclePrice,
+      driverCharge: 500,
+      totalAmount: selectedVehiclePrice + 500,
+      specialRequest: document.getElementById('specialRequest').value.trim() || 'None',
+      bookingId: 'SR' + Date.now() + Math.random().toString(36).substr(2, 5),
+      bookingDate: new Date().toLocaleString()
+    };
+    
+    // Store booking in localStorage for confirmation page
+    localStorage.setItem('currentBooking', JSON.stringify(bookingData));
+    
+    try {
+      // Store in Firebase
+      const bookingsRef = window.ref(window.database, 'bookings');
+      const newBookingRef = window.push(bookingsRef);
+      await window.set(newBookingRef, bookingData);
+      
+      // Also store in localStorage for backward compatibility
+      const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+      allBookings.push(bookingData);
+      localStorage.setItem('allBookings', JSON.stringify(allBookings));
+    } catch (error) {
+      console.error('Error saving to Firebase:', error);
+      // Fallback to localStorage only
+      const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+      allBookings.push(bookingData);
+      localStorage.setItem('allBookings', JSON.stringify(allBookings));
+    }
+    
+    // Show success message
+    showToast(`Booking Confirmed! ID: ${bookingData.bookingId}`, 'success');
+    
+    // Clear form
+    document.getElementById('bookingForm').reset();
+    customPlacesGroup.style.display = 'none';
+    customDestSummarySpan.textContent = '-';
+    
+    // Reset to default plan
+    tourPlanSelect.value = '5places';
+    selectedPlanNameSpan.textContent = planNames['5places'];
+    
+    // Reset vehicle selection
+    vehicleOptions.forEach((opt) => {
+      opt.classList.add('selected'); // Keep the only option selected
+    });
+    selectedVehiclePrice = planPrices['5places'];
+    vehiclePriceDisplay.textContent = '₹6,999';
     updateTotal();
-    loadFromUrlParams();
-  })();
+    
+    // Optionally redirect to a confirmation page (can be added later)
+    // window.location.href = "confirmation.html";
+  });
+  
+  // Initialize
+  updateTotal();
+  loadFromUrlParams();
+  loadCustomFromStorage();
 </script>
 </body>
 </html>
