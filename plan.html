@@ -211,6 +211,15 @@
       color: #e67e22;
       width: 24px;
     }
+    .baba-spot {
+      cursor: pointer;
+      color: #ffd56a;
+      text-decoration: underline;
+      transition: color 0.25s ease;
+    }
+    .baba-spot:hover {
+      color: #ffffff;
+    }
     .btn-cyber-plan {
       display: inline-block;
       width: 100%;
@@ -372,7 +381,7 @@
     <div class="plan-title">Divine Explorer</div>
     <div class="plan-price">⭐ 5 Sacred Places | Full Day Tour - ₹6999</div>
     <ul class="destinations-list">
-      <li><i class="fas fa-temple"></i> <strong>Baba Mandir + Shivganga</strong> - Holy shrine & panoramic views</li>
+      <li><i class="fas fa-temple"></i> <a class="baba-spot" href="baba.html">Baba Mandir + Shivganga</a> - Holy shrine & panoramic views</li>
       <li><i class="fas fa-tree"></i> <strong>Nandan Pahad</strong> - Scenic hilltop & nature beauty</li>
       <li><i class="fas fa-mountain"></i> <strong>Naulakha Mandir</strong> - Ancient temple & ropeway views</li>
       <li><i class="fas fa-water"></i> <strong>Tapuban</strong> - Serene waterfall & meditation spot</li>
@@ -388,7 +397,7 @@
     <div class="plan-title">Spiritual Circuit</div>
     <div class="plan-price">🌟 4 Holy Destinations | Half Day+ - ₹3999</div>
     <ul class="destinations-list">
-      <li><i class="fas fa-temple"></i> <strong>Baba Mandir</strong> - Main shrine with aarti experience</li>
+      <li><i class="fas fa-temple"></i> <a class="baba-spot" href="baba.html">Baba Mandir</a> - Main shrine with aarti experience</li>
       <li><i class="fas fa-tree"></i> <strong>Nandan Pahad</strong> - Sunrise point & nature walk</li>
       <li><i class="fas fa-mountain"></i> <strong>Naulakha Mandir</strong> - Ancient caves & ropeway</li>
       <li><i class="fas fa-water"></i> <strong>Tapuban</strong> - Waterfall & meditation retreat</li>
@@ -403,7 +412,7 @@
     <div class="plan-title">Baba Mandir Darshan</div>
     <div class="plan-price">🕉️ Single Destination | Half Day - ₹2999</div>
     <ul class="destinations-list">
-      <li><i class="fas fa-temple"></i> <strong>Baba Mandir</strong> - Complete darshan & puja experience</li>
+      <li><i class="fas fa-temple"></i> <a class="baba-spot" href="baba.html">Baba Mandir</a> - Complete darshan & puja experience</li>
       <li><i class="fas fa-parking"></i> Hassle-free pickup & drop</li>
       <li><i class="fas fa-coffee"></i> Complimentary prasadam & water</li>
     </ul>
@@ -441,10 +450,10 @@
   <div class="info-card">
     <h3><i class="fas fa-info-circle"></i> About the Sacred Destinations</h3>
     <div class="places-grid">
-      <div class="place-item">
+      <a class="place-item baba-spot" href="baba.html">
         <strong>🏯 Baba Mandir</strong><br>
         Renowned hilltop temple with divine energy, panoramic views of the valley, and spiritual ambiance. Perfect for morning aarti.
-      </div>
+      </a>
       <div class="place-item">
         <strong>🌄 Nandan Pahad</strong><br>
         Lush green hill station, famous for sunrise/sunset views, nature photography, and peaceful walking trails.
@@ -465,6 +474,33 @@
   <p>SR SUBHASH CAR RENTAL SERVICE — Your Trusted Pilgrimage Partner</p>
   <p style="font-size:0.7rem; margin-top:0.5rem;">© 2025 | Custom Tours Available 24/7 | Safe & Comfortable Journey</p>
 </footer>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDd5lR5hbpLvUzeBJstQ8sNWgv6RcHCH7U",
+    authDomain: "car-website-1637b.firebaseapp.com",
+    databaseURL: "https://car-website-1637b-default-rtdb.firebaseio.com",
+    projectId: "car-website-1637b",
+    storageBucket: "car-website-1637b.firebasestorage.app",
+    messagingSenderId: "535352425150",
+    appId: "1:535352425150:web:7f344485ccfc736cfffcef",
+    measurementId: "G-R38Z527CGL"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  // Make database available globally
+  window.database = database;
+  window.ref = ref;
+  window.onValue = onValue;
+</script>
 
 <script>
   // Custom plan handler
@@ -504,6 +540,108 @@
   if(urlParams.get('prefill') === 'custom') {
     // optional prefill logic
   }
+
+
+</script>
+<script>
+  // Load admin-added plans from Firebase and append to plans grid
+  document.addEventListener('DOMContentLoaded', function() {
+    const plansContainer = document.querySelector('.plans-container');
+    if (!plansContainer) return;
+
+    // Try to load from Firebase
+    try {
+      const plansRef = window.ref(window.database, 'admin/plans');
+      window.onValue(plansRef, (snapshot) => {
+        const plansData = snapshot.val();
+        if (plansData) {
+          // Convert object to array if needed
+          const plansArray = Array.isArray(plansData) ? plansData : Object.values(plansData);
+          
+          // Remove old admin plans (keep existing cards that aren't admin-added)
+          const allCards = document.querySelectorAll('.plan-card');
+          allCards.forEach(card => {
+            if (card.dataset.adminPlan === 'true') {
+              card.remove();
+            }
+          });
+          
+          // Add new plans from Firebase
+          plansArray.forEach(p => {
+            if (!p || !p.id) return;
+            
+            const card = document.createElement('div');
+            card.className = 'plan-card';
+            card.dataset.adminPlan = 'true';
+            const destItems = (p.places || '').split(',').map(d => `<li><i class="fas fa-map-pin"></i> ${d.trim()}</li>`).join('');
+            card.innerHTML = `
+              <div class="plan-icon"><i class="fas fa-star"></i></div>
+              <div class="plan-title">${p.title}</div>
+              <div class="plan-price">${p.price ? '₹' + Number(p.price).toLocaleString() : ''}</div>
+              <ul class="destinations-list">
+                ${destItems || '<li>No destinations specified</li>'}
+              </ul>
+              <p style="font-size:0.85rem; color:#9aa4bf;">${(p.description || '').slice(0,160)}</p>
+              <a href="#" class="btn-cyber-plan" onclick="(function(){ localStorage.setItem('selectedPlan', '${p.id}'); window.location.href='booking.html'; })()">Book This Package <i class="fas fa-arrow-right"></i></a>
+            `;
+
+            // If image exists, add it
+            if (p.image) {
+              const img = document.createElement('div');
+              img.style.margin = '1rem 0';
+              img.innerHTML = `<img src="${p.image}" style="width:100%; border-radius:12px; object-fit:cover;">`;
+              card.insertBefore(img, card.querySelector('.plan-title').nextSibling);
+            }
+
+            // Insert before the custom-plan card (if exists) or append
+            const customCard = document.querySelector('.plan-card.custom-plan');
+            if (customCard) plansContainer.insertBefore(card, customCard);
+            else plansContainer.appendChild(card);
+          });
+          
+          // Also save to localStorage for backup
+          localStorage.setItem('plans', JSON.stringify(plansArray));
+        }
+      });
+    } catch(error) {
+      console.warn('Firebase load error, using localStorage:', error);
+      // Fallback to localStorage
+      const plans = JSON.parse(localStorage.getItem('plans') || '[]');
+      if (!plans || plans.length === 0) return;
+
+      plans.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'plan-card';
+        const destItems = (p.places || '').split(',').map(d => `<li><i class="fas fa-map-pin"></i> ${d.trim()}</li>`).join('');
+        card.innerHTML = `
+          <div class="plan-icon"><i class="fas fa-star"></i></div>
+          <div class="plan-title">${p.title}</div>
+          <div class="plan-price">${p.price ? '₹' + Number(p.price).toLocaleString() : ''}</div>
+          <ul class="destinations-list">
+            ${destItems || '<li>No destinations specified</li>'}
+          </ul>
+          <p style="font-size:0.85rem; color:#9aa4bf;">${(p.description || '').slice(0,160)}</p>
+          <a href="#" class="btn-cyber-plan" onclick="(function(){ localStorage.setItem('selectedPlan', '${p.id}'); window.location.href='booking.html'; })()">Book This Package <i class="fas fa-arrow-right"></i></a>
+        `;
+
+        // If image exists, add it
+        if (p.image) {
+          const img = document.createElement('div');
+          img.style.margin = '1rem 0';
+          img.innerHTML = `<img src="${p.image}" style="width:100%; border-radius:12px; object-fit:cover;">`;
+          card.insertBefore(img, card.querySelector('.plan-title').nextSibling);
+        }
+
+        // Insert before the custom-plan card (if exists) or append
+        const customCard = document.querySelector('.plan-card.custom-plan');
+        if (customCard) plansContainer.insertBefore(card, customCard);
+        else plansContainer.appendChild(card);
+      });
+    }
+  });
+</script>
+    });
+  });
 </script>
 </body>
 </html>
