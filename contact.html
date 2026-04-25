@@ -10,10 +10,12 @@
   
   <!-- Firebase SDK -->
   <script type="module">
+    // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
     import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDd5lR5hbpLvUzeBJstQ8sNWgv6RcHCH7U",
       authDomain: "car-website-1637b.firebaseapp.com",
@@ -25,15 +27,16 @@
       measurementId: "G-R38Z527CGL"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const database = getDatabase(app);
 
+    // Make database available globally
     window.database = database;
     window.ref = ref;
     window.push = push;
     window.set = set;
-    console.log("Firebase initialized successfully");
   </script>
   <style>
     * {
@@ -49,6 +52,7 @@
       overflow-x: hidden;
     }
 
+    /* ========== DARK CYBER BACKGROUND ========== */
     .cyber-bg {
       position: fixed;
       top: 0;
@@ -69,6 +73,7 @@
       pointer-events: none;
     }
 
+    /* ========== FLOATING ACTION BUTTONS (Call & WhatsApp) ========== */
     .floating-buttons {
       position: fixed;
       bottom: 30px;
@@ -94,7 +99,11 @@
       transform: scale(1.1);
       box-shadow: 0 0 25px rgba(230,126,34,0.6);
     }
-    .float-call, .float-whatsapp {
+    .float-call {
+      background: linear-gradient(135deg, #25d366, #128C7E);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .float-whatsapp {
       background: linear-gradient(135deg, #25d366, #128C7E);
       border: 2px solid rgba(255,255,255,0.3);
     }
@@ -107,6 +116,14 @@
       50% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0.2); }
     }
 
+    /* Shake animation for errors */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    /* Toast Notification Styles */
     .toast-notification {
       position: fixed;
       top: 20px;
@@ -127,18 +144,28 @@
       align-items: center;
       gap: 10px;
     }
+
     .toast-notification.success {
       background: rgba(76, 175, 80, 0.9);
       border-color: #4CAF50;
       color: white;
     }
+
     .toast-notification.error {
       background: rgba(244, 67, 54, 0.9);
       border-color: #f44336;
       color: white;
+      animation: slideInDown 0.5s ease-out, shake 0.5s ease-in-out 0.5s;
     }
-    .toast-notification .icon { font-size: 1.5rem; }
-    .toast-notification .message { flex: 1; }
+
+    .toast-notification .icon {
+      font-size: 1.5rem;
+    }
+
+    .toast-notification .message {
+      flex: 1;
+    }
+
     .toast-notification .close-btn {
       background: none;
       border: none;
@@ -147,16 +174,98 @@
       cursor: pointer;
       padding: 0;
       opacity: 0.7;
-    }
-    @keyframes slideInDown {
-      from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes slideOutUp {
-      from { transform: translateY(0); opacity: 1; }
-      to { transform: translateY(-100%); opacity: 0; }
+      transition: opacity 0.2s;
     }
 
+    .toast-notification .close-btn:hover {
+      opacity: 1;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideOutUp {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+    }
+
+    /* Glowing Star Particles */
+    .star-particle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+
+    .star-particle::before {
+      content: '·';
+      font-size: 2rem;
+      color: #ffffff;
+      text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #e67e22,
+        0 0 15px #ff6b35,
+        0 0 20px #ff4500;
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(0px);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1) translateY(-20px);
+      }
+    }
+
+    @keyframes glow {
+      0% {
+        filter: brightness(1) blur(0px);
+      }
+      100% {
+        filter: brightness(1.5) blur(1px);
+      }
+    }
+
+    /* ========== MODERN NEON NAVBAR ========== */
     .navbar {
       position: fixed;
       top: 0;
@@ -170,16 +279,30 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(230, 126, 34, 0.4);
       z-index: 1000;
+      transition: all 0.3s;
     }
     .logo h2 {
       font-size: 1.4rem;
       font-weight: 800;
+      letter-spacing: -0.5px;
       color: #fff;
       text-shadow: 0 0 10px rgba(230,126,34,0.5);
     }
-    .logo h2 span { color: #e67e22; font-weight: 900; }
-    .logo p { font-size: 0.65rem; color: #e67e22; letter-spacing: 2px; margin-top: 2px; }
-    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .logo h2 span {
+      color: #e67e22;
+      font-weight: 900;
+    }
+    .logo p {
+      font-size: 0.65rem;
+      color: #e67e22;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
     .nav-links a {
       text-decoration: none;
       font-weight: 600;
@@ -189,7 +312,9 @@
       position: relative;
       padding: 0.5rem 0;
     }
-    .nav-links a:hover, .nav-links a.active { color: #e67e22; }
+    .nav-links a:hover, .nav-links a.active {
+      color: #e67e22;
+    }
     .nav-links a.active::before {
       content: '';
       position: absolute;
@@ -201,6 +326,7 @@
       box-shadow: 0 0 8px #e67e22;
     }
 
+    /* ========== PAGE HEADER ========== */
     .page-header {
       padding-top: 120px;
       text-align: center;
@@ -227,8 +353,12 @@
       background-clip: text;
       color: transparent;
     }
-    .page-header p { color: #9aa4bf; margin-top: 0.5rem; }
+    .page-header p {
+      color: #9aa4bf;
+      margin-top: 0.5rem;
+    }
 
+    /* ========== CONTACT CONTAINER ========== */
     .contact-container {
       max-width: 1300px;
       margin: 0 auto;
@@ -238,7 +368,9 @@
       gap: 2rem;
       margin-bottom: 3rem;
     }
-    .contact-info, .contact-form {
+
+    /* Contact Info Cards */
+    .contact-info {
       background: rgba(8, 12, 22, 0.7);
       backdrop-filter: blur(12px);
       border-radius: 2rem;
@@ -246,8 +378,10 @@
       border: 1px solid rgba(230,126,34,0.3);
       transition: all 0.3s;
     }
-    .contact-info:hover, .contact-form:hover { border-color: rgba(230,126,34,0.6); }
-    .info-title, .form-title {
+    .contact-info:hover {
+      border-color: rgba(230,126,34,0.6);
+    }
+    .info-title {
       font-size: 1.5rem;
       font-weight: 700;
       margin-bottom: 1.5rem;
@@ -255,6 +389,9 @@
       align-items: center;
       gap: 10px;
       color: #e67e22;
+    }
+    .info-card {
+      margin-bottom: 2rem;
     }
     .info-item {
       display: flex;
@@ -266,7 +403,10 @@
       border-radius: 1rem;
       transition: all 0.3s;
     }
-    .info-item:hover { transform: translateX(5px); background: rgba(230,126,34,0.1); }
+    .info-item:hover {
+      transform: translateX(5px);
+      background: rgba(230,126,34,0.1);
+    }
     .info-icon {
       width: 45px;
       height: 45px;
@@ -278,49 +418,19 @@
       font-size: 1.2rem;
       color: #e67e22;
     }
-    .info-detail h4 { font-size: 1rem; margin-bottom: 0.3rem; }
-    .info-detail p, .info-detail a { color: #b0b8d0; text-decoration: none; font-size: 0.9rem; }
-    .info-detail a:hover { color: #e67e22; }
-    .quick-actions {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.5rem;
+    .info-detail h4 {
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
     }
-    .quick-btn {
-      flex: 1;
-      background: rgba(230,126,34,0.15);
-      border: 1px solid rgba(230,126,34,0.4);
-      border-radius: 1rem;
-      padding: 0.8rem;
-      text-align: center;
+    .info-detail p, .info-detail a {
+      color: #b0b8d0;
       text-decoration: none;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+    .info-detail a:hover {
       color: #e67e22;
-      font-weight: 600;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
     }
-    .quick-btn:hover {
-      background: #e67e22;
-      color: #000;
-      transform: translateY(-2px);
-    }
-    .hours-card {
-      background: rgba(0,0,0,0.3);
-      border-radius: 1rem;
-      padding: 1rem;
-      margin-top: 1rem;
-    }
-    .hours-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .hours-day { font-weight: 600; }
-    .hours-time { color: #ffaa66; }
     .social-links {
       display: flex;
       gap: 1rem;
@@ -345,8 +455,83 @@
       background: #e67e22;
       color: #000;
       transform: translateY(-3px);
+      box-shadow: 0 0 15px rgba(230,126,34,0.5);
     }
-    .input-group { margin-bottom: 1.2rem; }
+
+    /* Business Hours */
+    .hours-card {
+      background: rgba(0,0,0,0.3);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .hours-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .hours-day {
+      font-weight: 600;
+    }
+    .hours-time {
+      color: #ffaa66;
+    }
+
+    /* Quick Action Buttons */
+    .quick-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .quick-btn {
+      flex: 1;
+      background: rgba(230,126,34,0.15);
+      border: 1px solid rgba(230,126,34,0.4);
+      border-radius: 1rem;
+      padding: 0.8rem;
+      text-align: center;
+      text-decoration: none;
+      color: #e67e22;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .quick-btn:hover {
+      background: #e67e22;
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(230,126,34,0.4);
+    }
+
+    /* Contact Form */
+    .contact-form {
+      background: rgba(8, 12, 22, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 2rem;
+      border: 1px solid rgba(230,126,34,0.3);
+      transition: all 0.3s;
+    }
+    .contact-form:hover {
+      border-color: rgba(230,126,34,0.6);
+    }
+    .form-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e67e22;
+    }
+    .input-group {
+      margin-bottom: 1.2rem;
+    }
     .input-group label {
       display: block;
       font-size: 0.75rem;
@@ -391,11 +576,8 @@
       transform: translateY(-2px);
       box-shadow: 0 0 25px rgba(230,126,34,0.5);
     }
-    .btn-submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
+
+    /* Map Section */
     .map-section {
       max-width: 1300px;
       margin: 0 auto 3rem;
@@ -428,6 +610,8 @@
       border: 0;
       display: block;
     }
+
+    /* Footer */
     .footer-cyber {
       background: #010101;
       border-top: 1px solid rgba(230,126,34,0.3);
@@ -435,24 +619,80 @@
       padding: 2rem;
       margin-top: 2rem;
     }
+
     @media (max-width: 900px) {
-      .navbar { flex-direction: column; padding: 1rem; gap: 0.5rem; }
-      .nav-links { gap: 1rem; }
-      .contact-container { grid-template-columns: 1fr; padding: 1rem; gap: 1rem; }
-      .page-header h1 { font-size: 2rem; }
-      .row-2col { grid-template-columns: 1fr; }
-      .float-btn { width: 50px; height: 50px; }
-      .float-btn i { font-size: 24px; }
+      .navbar {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.5rem;
+      }
+      .nav-links {
+        gap: 1rem;
+      }
+      .contact-container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+      }
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      .row-2col {
+        grid-template-columns: 1fr;
+      }
+      .contact-form {
+        padding: 1.5rem;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .btn-submit {
+        width: 100%;
+        padding: 1rem;
+      }
+      .floating-buttons {
+        bottom: 20px;
+        right: 20px;
+      }
+      .float-btn {
+        width: 50px;
+        height: 50px;
+      }
+      .float-btn i {
+        font-size: 24px;
+      }
+      .toast-notification {
+        min-width: 300px;
+        max-width: 90vw;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+      }
     }
+
     @media (max-width: 600px) {
-      .page-header h1 { font-size: 1.5rem; }
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+      .contact-info h3 {
+        font-size: 1.2rem;
+      }
+      .info-item {
+        padding: 1rem;
+      }
     }
   </style>
 </head>
 <body>
 <div class="cyber-bg"></div>
+
+<!-- Fire Sprinkle Container -->
+<div id="fireSprinkles"></div>
+
+<!-- Toast Notifications Container -->
 <div id="toastContainer"></div>
 
+<!-- Floating Action Buttons for Direct Call & WhatsApp -->
 <div class="floating-buttons">
   <a href="tel:+917004499403" class="float-btn float-call" title="Call Now">
     <i class="fas fa-phone-alt"></i>
@@ -482,8 +722,10 @@
 </div>
 
 <div class="contact-container">
+  <!-- Contact Info Section -->
   <div class="contact-info">
     <div class="info-title"><i class="fas fa-address-card"></i> Contact Information</div>
+    
     <div class="info-card">
       <div class="info-item">
         <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
@@ -492,6 +734,7 @@
           <p>SR Subhash Car Rental Service<br>Near Baba Mandir Road, Deoghar<br>Jharkhand - 814112, India</p>
         </div>
       </div>
+      
       <div class="info-item">
         <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
         <div class="info-detail">
@@ -500,6 +743,8 @@
           <a href="tel:+919876543211">+91 98765 43211</a> (24/7 Support)</p>
         </div>
       </div>
+      
+      
       <div class="info-item">
         <div class="info-icon"><i class="fab fa-whatsapp"></i></div>
         <div class="info-detail">
@@ -508,15 +753,27 @@
         </div>
       </div>
     </div>
+    
+    <!-- Quick Action Buttons -->
     <div class="quick-actions">
-      <a href="tel:+917004499403" class="quick-btn"><i class="fas fa-phone-alt"></i> Call Now</a>
-      <a href="https://wa.me/917004499403?text=Hello%20SR%20Subhash%2C%20I%20want%20to%20book%20a%20car%20rental%20service" target="_blank" class="quick-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+      <a href="tel:+917004499403" class="quick-btn">
+        <i class="fas fa-phone-alt"></i> Call Now
+      </a>
+      <a href="https://wa.me/917004499403?text=Hello%20SR%20Subhash%2C%20I%20want%20to%20book%20a%20car%20rental%20service" target="_blank" class="quick-btn">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </a>
     </div>
+    
     <div class="info-title" style="font-size:1.2rem; margin-top:1rem;"><i class="fas fa-clock"></i> Business Hours</div>
     <div class="hours-card">
-      <div class="hours-item"><span class="hours-day">Monday - Sunday</span><span class="hours-time">24/7 Available</span></div>
-      <div class="hours-item"><span class="hours-day">Support Helpline</span><span class="hours-time">Always Open</span></div>
+      <div class="hours-item">
+    
+      <div class="hours-item">
+        <span class="hours-day">Support </span>
+        <span class="hours-time">24/7 Available</span>
+      </div>
     </div>
+    
     <div class="info-title" style="font-size:1.2rem; margin-top:1rem;"><i class="fas fa-share-alt"></i> Follow Us</div>
     <div class="social-links">
       <a href="https://www.facebook.com/share/1CWHGRSjgd/" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
@@ -527,6 +784,7 @@
     </div>
   </div>
   
+  <!-- Contact Form Section -->
   <div class="contact-form">
     <div class="form-title"><i class="fas fa-paper-plane"></i> Send Us a Message</div>
     <form id="contactForm">
@@ -537,9 +795,10 @@
         </div>
         <div class="input-group">
           <label><i class="fas fa-phone"></i> Phone Number *</label>
-          <input type="tel" id="contactPhone" required placeholder="10-digit mobile number">
+          <input type="tel" id="contactPhone" required placeholder="Enter Mobile Number" minlength="10" maxlength="10">
         </div>
       </div>
+
       <div class="input-group">
         <label><i class="fas fa-tag"></i> Subject *</label>
         <select id="contactSubject">
@@ -556,157 +815,222 @@
       </div>
       <button type="submit" class="btn-submit" id="sendMessageBtn"><i class="fas fa-paper-plane"></i> Send Message</button>
     </form>
-    <div id="formMessage" style="margin-top: 1rem; font-size: 0.8rem; text-align: center;"></div>
+    <div id="formMessage" style="margin-top: 1rem; font-size: 0.8rem; text-align: center; color: #e67e22;"></div>
   </div>
 </div>
 
+<!-- Map Section -->
 <div class="map-section">
   <div class="map-card">
     <div class="map-title"><i class="fas fa-map"></i> Find Us On Map</div>
     <div class="map-container">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117348.75872242668!2d86.65657935!3d24.48965635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f1277b8cb3c2b1%3A0x8f5c2b5a5a5a5a5a!2sDeoghar%2C%20Jharkhand!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" allowfullscreen="" loading="lazy"></iframe>
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117348.75872242668!2d86.65657935!3d24.48965635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f1277b8cb3c2b1%3A0x8f5c2b5a5a5a5a5a!2sDeoghar%2C%20Jharkhand!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
     </div>
-    <p style="font-size:0.75rem; color:#9aa4bf; margin-top:1rem; text-align:center;"><i class="fas fa-location-dot"></i> Located near Baba Mandir Road, Deoghar</p>
+    <p style="font-size:0.75rem; color:#9aa4bf; margin-top:1rem; text-align:center;">
+      <i class="fas fa-location-dot"></i> Located near Baba Mandir Road, Deoghar — Easy access from Railway Station & Bus Stand
+    </p>
   </div>
 </div>
 
+<!-- Quick Support Banner -->
 <div style="max-width: 1300px; margin: 0 auto 2rem; padding: 0 2rem;">
   <div style="background: linear-gradient(135deg, rgba(230,126,34,0.1), rgba(0,0,0,0.3)); border-radius: 1rem; padding: 1rem; text-align: center; border: 1px solid rgba(230,126,34,0.3);">
-    <p><i class="fas fa-headset" style="color:#e67e22;"></i> <strong>Need immediate assistance?</strong> Call us 24/7 at <strong style="color:#e67e22;">+91 70044 99403</strong></p>
+    <p><i class="fas fa-headset" style="color:#e67e22;"></i> <strong>Need immediate assistance?</strong> Call us 24/7 at <strong style="color:#e67e22;">+91 70044 99403</strong> or click the WhatsApp button for instant replies.</p>
   </div>
 </div>
 
 <footer class="footer-cyber">
   <p>SR SUBHASH CAR RENTAL SERVICE — Your Trusted Travel Partner Since 2012</p>
-  <p style="font-size:0.7rem; margin-top:0.5rem;">© 2025 | All Rights Reserved</p>
+  <p style="font-size:0.7rem; margin-top:0.5rem;">© 2025 | All Rights Reserved | Designed with <i class="fas fa-heart" style="color:#e67e22;"></i> for Premium Travelers</p>
 </footer>
 
 <script>
-  (function() {
-    const sendBtn = document.getElementById('sendMessageBtn');
-    const contactForm = document.getElementById('contactForm');
-    const toastContainer = document.getElementById('toastContainer');
+  const sendBtn = document.getElementById('sendMessageBtn');
+  const contactForm = document.getElementById('contactForm');
+  const formMessageDiv = document.getElementById('formMessage');
+  const toastContainer = document.getElementById('toastContainer');
+  const fireSprinkles = document.getElementById('fireSprinkles');
+  
+  // Initialize star particles
+  // initStarParticles();
+  
+  contactForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    // Get form values
+    const name = document.getElementById('contactName').value.trim();
+    const phone = document.getElementById('contactPhone').value.trim();
+    const subject = document.getElementById('contactSubject').value;
+    const message = document.getElementById('contactMessage').value.trim();
     
-    function showToast(message, type) {
-      const toast = document.createElement('div');
-      toast.className = `toast-notification ${type}`;
-      const icon = type === 'success' ? '✅' : '❌';
-      const title = type === 'success' ? 'Success!' : 'Error!';
-      toast.innerHTML = `
-        <span class="icon">${icon}</span>
-        <div class="message"><strong>${title}</strong><br>${message}</div>
-        <button class="close-btn" onclick="this.parentElement.remove()">×</button>
-      `;
-      toastContainer.appendChild(toast);
-      setTimeout(() => {
-        if (toast.parentElement) {
-          toast.style.animation = 'slideOutUp 0.5s ease-in';
-          setTimeout(() => toast.remove(), 500);
-        }
-      }, 5000);
+    // Validation
+    if (!name) {
+      showToast('Please enter your full name', 'error');
+      return;
+    }
+    if (!phone) {
+      showToast('Please enter your phone number', 'error');
+      return;
+    }
+    const phoneOnly = phone.replace(/\D/g, '');
+    if (!/^\d{10}$/.test(phoneOnly)) {
+      showToast('Please enter a valid 10-digit phone number', 'error');
+      return;
+    }
+    if (!message) {
+      showToast('Please enter your message', 'error');
+      return;
     }
     
-    async function saveContactToFirebase(contactData) {
-      return new Promise(async (resolve, reject) => {
-        try {
-          if (window.database && window.ref && window.set) {
-            const contactsRef = window.ref(window.database, `contacts/${contactData.messageId}`);
-            await window.set(contactsRef, contactData);
-            console.log('Firebase save success:', contactData.messageId);
-            resolve(true);
-          } else {
-            reject(new Error('Firebase not ready'));
-          }
-        } catch (err) {
-          console.error('Firebase write error:', err);
-          reject(err);
-        }
-      });
+    // Get subject text
+    const subjectText = {
+      'booking': 'Booking Inquiry',
+      'custom': 'Custom Tour Request',
+      'support': 'Support / Help',
+      'feedback': 'Feedback / Suggestion',
+      'other': 'Other'
+    }[subject];
+    
+    // Store message in Firebase
+    const contactData = {
+      name: name,
+      phone: phone,
+      subject: subjectText,
+      message: message,
+      date: new Date().toLocaleString(),
+      messageId: 'MSG' + Date.now() + Math.random().toString(36).substr(2, 5),
+      timestamp: Date.now()
+    };
+    
+    try {
+      // Store in Firebase using messageId key (ensures unique reference for admin)
+      const contactsRef = window.ref(window.database, `contacts/${contactData.messageId}`);
+      await window.set(contactsRef, contactData);
+      
+      // Also keep in localStorage for backward compatibility
+      const allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
+      allContacts.push(contactData);
+      localStorage.setItem('allContacts', JSON.stringify(allContacts));
+      
+      // Send WhatsApp notification to admin
+      const adminMobile = localStorage.getItem('adminMobile') || '917004499403';
+      const whatsappMsg = `New Contact Alert!\nName: ${contactData.name}\nPhone: ${contactData.phone}\nSubject: ${contactData.subject}\nMessage: ${contactData.message}`;
+      const whatsappUrl = `https://wa.me/${adminMobile}?text=${encodeURIComponent(whatsappMsg)}`;
+      window.open(whatsappUrl, '_blank');
+      
+      showToast(`Message Sent Successfully! Reference ID: ${contactData.messageId}`, 'success');
+    } catch (error) {
+      console.error('Error saving to Firebase:', error);
+      // Fallback to localStorage only
+      const allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
+      allContacts.push(contactData);
+      localStorage.setItem('allContacts', JSON.stringify(allContacts));
+      localStorage.setItem('lastContactMessage', JSON.stringify(contactData));
+      
+      showToast(`Message Sent Successfully! Reference ID: ${contactData.messageId}`, 'success');
     }
     
-    contactForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      console.log("Form submitted - Sending message...");
-      
-      const name = document.getElementById('contactName').value.trim();
-      const phone = document.getElementById('contactPhone').value.trim();
-      const subject = document.getElementById('contactSubject').value;
-      const message = document.getElementById('contactMessage').value.trim();
-      
-      if (!name) { showToast('Please enter your full name', 'error'); return; }
-      if (!phone) { showToast('Please enter your phone number', 'error'); return; }
-      const phoneDigits = phone.replace(/\D/g, '');
-      if (!/^\d{10}$/.test(phoneDigits)) { showToast('Please enter a valid 10-digit phone number', 'error'); return; }
-      if (!message) { showToast('Please enter your message', 'error'); return; }
-      
-      const subjectText = {
-        'booking': 'Booking Inquiry',
-        'custom': 'Custom Tour Request',
-        'support': 'Support / Help',
-        'feedback': 'Feedback / Suggestion',
-        'other': 'Other'
-      }[subject];
-      
-      const messageId = 'MSG' + Date.now() + Math.random().toString(36).substr(2, 6).toUpperCase();
-      
-      const contactData = {
-        messageId: messageId,
-        name: name,
-        phone: phoneDigits,
-        subject: subjectText,
-        message: message,
-        timestamp: Date.now(),
-        dateTime: new Date().toLocaleString(),
-        status: "Pending"
-      };
-      
-      const originalText = sendBtn.innerHTML;
-      sendBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Sending...';
-      sendBtn.disabled = true;
-      
-      try {
-        await saveContactToFirebase(contactData);
-        
-        let allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
-        allContacts.push(contactData);
-        localStorage.setItem('allContacts', JSON.stringify(allContacts));
-        
-        showToast(`Message Sent! ID: ${messageId}. We'll respond within 24 hours.`, 'success');
-        
-        document.getElementById('contactName').value = '';
-        document.getElementById('contactPhone').value = '';
-        document.getElementById('contactSubject').value = 'booking';
-        document.getElementById('contactMessage').value = '';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-      } catch (error) {
-        console.error('Save error:', error);
-        let allContacts = JSON.parse(localStorage.getItem('allContacts') || '[]');
-        allContacts.push(contactData);
-        localStorage.setItem('allContacts', JSON.stringify(allContacts));
-        showToast(`Message Saved! ID: ${messageId}. Our team will contact you soon.`, 'success');
-        
-        document.getElementById('contactName').value = '';
-        document.getElementById('contactPhone').value = '';
-        document.getElementById('contactSubject').value = 'booking';
-        document.getElementById('contactMessage').value = '';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } finally {
-        sendBtn.innerHTML = originalText;
-        sendBtn.disabled = false;
+    // Clear form
+    document.getElementById('contactForm').reset();
+    
+    // Optional: In a real scenario, you would send this to a backend API
+    console.log('Contact Form Data:', contactData);
+  });
+  
+  function showError(message) {
+    formMessageDiv.innerHTML = message;
+    formMessageDiv.style.color = '#ff4444';
+    formMessageDiv.style.background = 'rgba(255, 68, 68, 0.2)';
+    formMessageDiv.style.padding = '1rem';
+    formMessageDiv.style.borderRadius = '1rem';
+    formMessageDiv.style.border = '2px solid #ff4444';
+    formMessageDiv.style.fontSize = '1rem';
+    formMessageDiv.style.fontWeight = 'bold';
+    formMessageDiv.style.textAlign = 'center';
+    formMessageDiv.style.boxShadow = '0 0 20px rgba(255, 68, 68, 0.3)';
+    
+    // Shake animation for error
+    formMessageDiv.style.animation = 'shake 0.5s ease-in-out';
+    
+    setTimeout(() => {
+      formMessageDiv.innerHTML = '';
+      formMessageDiv.style.padding = '0';
+      formMessageDiv.style.background = 'transparent';
+      formMessageDiv.style.border = 'none';
+      formMessageDiv.style.boxShadow = 'none';
+      formMessageDiv.style.animation = 'none';
+    }, 4000);
+  }
+  
+  function showMessage(msg, type) {
+    formMessageDiv.innerHTML = msg.replace(/\n/g, '<br>');
+    formMessageDiv.style.color = type === 'error' ? '#ff8866' : '#e67e22';
+    formMessageDiv.style.background = type === 'error' ? 'rgba(255,68,68,0.1)' : 'rgba(230,126,34,0.1)';
+    formMessageDiv.style.padding = '0.8rem';
+    formMessageDiv.style.borderRadius = '1rem';
+    formMessageDiv.style.border = `1px solid ${type === 'error' ? '#ff8866' : '#e67e22'}`;
+    
+    setTimeout(() => {
+      formMessageDiv.innerHTML = '';
+      formMessageDiv.style.padding = '0';
+      formMessageDiv.style.background = 'transparent';
+      formMessageDiv.style.border = 'none';
+    }, 5000);
+  }
+  
+  function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    
+    const icon = type === 'success' ? '✅' : '❌';
+    const title = type === 'success' ? 'Success!' : 'Failed!';
+    
+    toast.innerHTML = `
+      <span class="icon">${icon}</span>
+      <div class="message">
+        <strong>${title}</strong><br>
+        ${message}
+      </div>
+      <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      if (toast.parentElement) {
+        toast.style.animation = 'slideOutUp 0.5s ease-in';
+        setTimeout(() => toast.remove(), 500);
       }
-    });
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const queryType = urlParams.get('type');
-    if (queryType === 'booking') {
-      document.getElementById('contactSubject').value = 'booking';
-    } else if (queryType === 'support') {
-      document.getElementById('contactSubject').value = 'support';
+    }, 5000);
+  }
+  
+  function initStarParticles() {
+    const container = document.body;
+    const particleCount = 50;
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'star-particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 4 + 's';
+      container.appendChild(particle);
     }
-    
-    console.log("Contact page loaded - Send button ready");
-  })();
+  }
+  
+  // Pre-fill from URL if needed
+  const urlParams = new URLSearchParams(window.location.search);
+  const queryType = urlParams.get('type');
+  if (queryType === 'booking') {
+    document.getElementById('contactSubject').value = 'booking';
+  } else if (queryType === 'support') {
+    document.getElementById('contactSubject').value = 'support';
+  }
 </script>
 </body>
 </html>
